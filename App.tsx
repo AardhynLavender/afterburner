@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {isLoaded ? <Text>file Loaded</Text> : <Text>Loading...</Text>}
+      {isLoaded ? <Text>File Loaded</Text> : <Text>Loading...</Text>}
       {error && <Text style={styles.error}>{error.message}</Text>}
       <View style={styles.buttonGroup}>
         <Button title="Play" onPress={play} disabled={!isLoaded || playing} />
