@@ -21,6 +21,8 @@ web-build/
 # Metro
 .metro-health-check*
 
+assets/audio
+
 # debug
 npm-debug.*
 yarn-debug.*
