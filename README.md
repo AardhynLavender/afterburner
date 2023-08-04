@@ -16,8 +16,10 @@ vim .env
 ```
 
 ```bash
-npm run dev
+npm start
 ```
+
+Scan the QR code to open in Expo Go, or use `a` to open in the default simulator for your operating system.
 
 ## License
 
