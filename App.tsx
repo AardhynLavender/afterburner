@@ -1,43 +1,100 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
-import useSound from "./sound/sound";
+import { NavigationContainer } from "@react-navigation/native";
+import React, { useState } from "react";
+import Fi from "react-native-vector-icons/Feather";
+import { Home, Memories, Scan, Shows, Settings } from "./screens";
+import { RootTabNavigator, RootTabScreen } from "./navigation";
+import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
+import { loadAsync } from "expo-font";
+import { useEffect } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const SOUND_FILE = require("./assets/audio/theAndersonLocalization/Track-1.wav");
+const stdProps: BottomTabNavigationOptions = {
+  tabBarShowLabel: false,
+};
 
-export default function App() {
-  const { isLoaded, playing, error, play, stop, pause } = useSound(SOUND_FILE);
+async function load() {
+  await loadAsync({
+    "Nimbus sans": require("./assets/fonts/NimbusSans-Bold.otf"),
+  });
+}
+function useLoading() {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    load().then(() => setLoading(false));
+  });
 
-  return (
-    <View style={styles.container}>
-      {isLoaded ? <Text>File Loaded</Text> : <Text>Loading...</Text>}
-      {error && <Text style={styles.error}>{error.message}</Text>}
-      <View style={styles.buttonGroup}>
-        <Button title="Play" onPress={play} disabled={!isLoaded || playing} />
-        <Button
-          title="Pause"
-          onPress={pause}
-          disabled={!isLoaded || !playing}
-        />
-        <Button title="Stop" onPress={stop} disabled={!isLoaded || !playing} />
-      </View>
-      <StatusBar style="auto" />
-    </View>
-  );
+  return loading;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    gap: 32,
-    justifyContent: "center",
-  },
-  buttonGroup: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  error: { color: "red" },
-  success: { color: "blue" },
-});
+const queryClient = new QueryClient();
+
+export default function App() {
+  const loading = useLoading();
+
+  if (loading) return null;
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <RootTabNavigator initialRouteName="scan">
+          <RootTabScreen
+            name="home"
+            component={Home}
+            options={{
+              title: "Home",
+              tabBarIcon: ({ color, size }) => (
+                <Fi name="home" size={size} color={color} />
+              ),
+              ...stdProps,
+            }}
+          />
+          <RootTabScreen
+            name="shows"
+            component={Shows}
+            options={{
+              title: "Shows",
+              tabBarIcon: ({ color, size }) => (
+                <Fi name="info" size={size} color={color} />
+              ),
+              ...stdProps,
+            }}
+          />
+          <RootTabScreen
+            name="scan"
+            component={Scan}
+            options={{
+              title: "Scan Ticket",
+              unmountOnBlur: true, // unmount camera when not in view
+              tabBarIcon: ({ color, size }) => (
+                <Fi name="camera" size={size} color={color} />
+              ),
+              ...stdProps,
+            }}
+          />
+          <RootTabScreen
+            name="memories"
+            component={Memories}
+            options={{
+              title: "Your Memories",
+              tabBarIcon: ({ color, size }) => (
+                <Fi name="book-open" size={size} color={color} />
+              ),
+              ...stdProps,
+            }}
+          />
+          <RootTabScreen
+            name="settings"
+            component={Settings}
+            options={{
+              title: "User Settings",
+              tabBarIcon: ({ color, size }) => (
+                <Fi name="settings" size={size} color={color} />
+              ),
+              ...stdProps,
+            }}
+          />
+        </RootTabNavigator>
+      </NavigationContainer>
+    </QueryClientProvider>
+  );
+}
