@@ -1,7 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { invariant } from "../exception/invariant";
+import { useState, useEffect } from "react";
 
-export type Primitive = string | number | object | boolean;
-export type PrimitiveType = "string" | "number" | "object" | "boolean";
+export type Primitive = string | number | object | boolean | null;
+export const PrimitiveTypes = ["string", "number", "object", "boolean"];
+export type PrimitiveType = (typeof PrimitiveTypes)[number];
 
 class WriteException extends Error {
   public constructor(message: string) {
@@ -84,4 +87,30 @@ export async function read<
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof Error) throw new WriteException(message);
   }
+}
+
+export function usePersistent<T extends Primitive>(
+  key: string,
+  defaultValue: T | null = null,
+  type?: PrimitiveType
+) {
+  invariant(
+    (defaultValue === null || defaultValue === undefined) && !type,
+    "unable to narrow runtime `type` from null default value"
+  );
+
+  const [value, setValue] = useState();
+  useEffect(() => {
+    const typename =
+      type ??
+      ["number", "boolean", "object", "number"].includes(typeof defaultValue)
+        ? (typeof defaultValue as PrimitiveType)
+        : null;
+    if (!typename) throw new Error("unable to narrow type");
+    const currentValue = read(key, typename);
+
+    write(key, value ?? null);
+  }, [value]);
+
+  return [value, setValue];
 }
