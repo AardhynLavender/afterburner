@@ -6,7 +6,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "supabase:login": "npx supabase login",
-    "start": "expo start --tunnel",
+    "start": "expo start --tunnel --dev-client",
     "start:android": "expo start --android --tunnel",
     "start:ios": "expo start --ios --tunnel",
     "start:web": "expo start --web --tunnel"
