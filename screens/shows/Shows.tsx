@@ -21,7 +21,7 @@ export default function Shows({ navigation }: RootScreenProps<"shows">) {
         name="show"
         component={Show}
         options={options}
-        initialParams={{ showKey: null }}
+        initialParams={{ showId: null }}
       />
     </ShowStackNavigator>
   );
