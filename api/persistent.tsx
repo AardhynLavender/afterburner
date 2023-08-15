@@ -1,18 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { invariant } from "../exception/invariant";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export type Primitive = string | number | object | boolean | null;
-export const PrimitiveTypes = ["string", "number", "object", "boolean"];
+export const PrimitiveTypes = [
+  "string",
+  "number",
+  "object",
+  "boolean",
+] as const;
 export type PrimitiveType = (typeof PrimitiveTypes)[number];
 
 class WriteException extends Error {
-  public constructor(message: string) {
-    super(message);
-    this.name = "WriteException";
-  }
-}
-class ReadException extends Error {
   public constructor(message: string) {
     super(message);
     this.name = "WriteException";
@@ -30,29 +29,17 @@ function serialize<T extends Primitive>(value: T) {
   if (typeof value === "string") return value;
   return typeof value === "object" ? JSON.stringify(value) : value.toString();
 }
-function deserialize(value: string, type: PrimitiveType) {
-  switch (type) {
-    case "object":
-      const object = JSON.parse(value);
-      if (typeof object === "object") return object as object;
-      throw new DeserializeException(
-        `failed to extract boolean type from '${value}'`
-      );
-    case "string":
-      return value;
-    case "boolean":
-      if (value === "true") return true;
-      if (value === "false") return false;
-      throw new DeserializeException(
-        `failed to extract boolean type from '${value}'`
-      );
-    case "number":
-      const number = parseInt(value);
-      if (isNaN(number))
-        throw new DeserializeException(
-          `Failed to extract number from ${value}, not a number!`
-        );
-      return number;
+
+function deserialize(value: string | null) {
+  if (value === null) return null;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (!isNaN(parseInt(value))) return parseInt(value);
+  try {
+    const parsed = JSON.parse(value);
+    return parsed;
+  } catch (error) {
+    return value;
   }
 }
 
@@ -66,51 +53,60 @@ export async function write<T extends Primitive>(key: string, value: T) {
   }
 }
 
-export async function read<
-  T extends PrimitiveType,
-  R extends Primitive | null =
-    | (T extends "string"
-        ? string
-        : T extends "object"
-        ? object
-        : T extends "number"
-        ? number
-        : string)
-    | null
->(key: string, type: T) {
+export async function read<T extends Primitive>(key: string) {
   try {
     const readable = await AsyncStorage.getItem(key);
-    if (readable === null || readable === undefined) return readable;
-    const writable = deserialize(readable, type);
-    return writable as R;
+    const writable = deserialize(readable);
+    return writable as T;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof Error) throw new WriteException(message);
+    throw error;
+  }
+}
+
+export async function remove(key: string) {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (error instanceof Error) throw new WriteException(message);
+    throw error;
+  }
+}
+
+export async function clear() {
+  try {
+    await AsyncStorage.clear();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (error instanceof Error) throw new WriteException(message);
+    throw error;
   }
 }
 
 export function usePersistent<T extends Primitive>(
   key: string,
-  defaultValue: T | null = null,
-  type?: PrimitiveType
+  initialValue: T | null = null
 ) {
-  invariant(
-    (defaultValue === null || defaultValue === undefined) && !type,
-    "unable to narrow runtime `type` from null default value"
-  );
+  const [reading, setReading] = useState(true);
+  const [value, setValue] = useState<T | null>(null);
 
-  const [value, setValue] = useState();
+  // read from disk on mount
   useEffect(() => {
-    const typename =
-      type ??
-      ["number", "boolean", "object", "number"].includes(typeof defaultValue)
-        ? (typeof defaultValue as PrimitiveType)
-        : null;
-    if (!typename) throw new Error("unable to narrow type");
-    const currentValue = read(key, typename);
+    (async () => {
+      const value = await read<T>(key);
+      setValue(value ?? initialValue);
+      setReading(false);
+    })();
+  }, []);
 
-    write(key, value ?? null);
+  // write to disk when value changes
+  useEffect(() => {
+    (async () => {
+      await write<T>(key, value as T);
+    })();
   }, [value]);
 
-  return [value, setValue];
+  return [value, setValue, reading] as const;
 }
