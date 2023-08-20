@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { invariant } from "../../../exception/invariant";
 import { ShowScreenProps } from "../../../navigation";
 import useSound from "../../../sound/sound";
-import { AVPlaybackSource } from "expo-av";
 import { usePersistent } from "../../../api/persistent";
-import { chapters } from "../../../static";
+import { Chapter, chapters } from "../../../static";
+import { START_MS } from "../../../sound/sound";
+import React from "react";
 
 export default function Show({ route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
@@ -30,39 +31,61 @@ export default function Show({ route }: ShowScreenProps<"show">) {
 
   if (reading) return <Text>Loading...</Text>;
 
-  return (
-    <View style={styles.container}>
-      {running ? (
-        <CurrentChapter
-          file={chapters[currentTrack ?? 0].audio_file}
-          onNext={handleNext}
-        />
-      ) : (
-        <StartShow onStart={handleStart} />
-      )}
-    </View>
-  );
+  if (running)
+    return (
+      <CurrentChapter
+        chapter={chapters[currentTrack ?? 0]}
+        onNext={handleNext}
+      />
+    );
+  return <StartShow onStart={handleStart} />;
 }
 
 function CurrentChapter({
-  file,
-  onNext: handleNext,
+  chapter,
+  onNext,
 }: {
-  file: AVPlaybackSource;
+  chapter: Chapter;
   onNext: () => void;
 }) {
-  const { isLoaded, playing, error, play, stop, pause } = useSound(file);
+  const [position, setPosition] = useState(0);
+  const handleTick = (position: number) => {
+    setPosition((position / duration) * 100);
+  };
+
+  const handleNext = () => {
+    setPosition(START_MS);
+    onNext();
+  };
+
+  const { isLoaded, playing, error, play, pause, duration } = useSound(
+    chapter.audio_file,
+    { autoPlay: true, onTick: handleTick, onFinish: handleNext }
+  );
 
   if (!isLoaded) return <Text>Loading...</Text>;
 
+  const handlePlayToggle = () => {
+    if (playing) pause();
+    else play();
+  };
+
   return (
-    <View>
-      <View style={{ flexDirection: "row", gap: 16 }}>
-        <Button title="Play" onPress={play} />
-        <Button title="Pause" onPress={pause} />
-        <Button title="Stop" onPress={stop} />
+    <View style={styles.container}>
+      <Text>{chapter.title}</Text>
+      <View style={styles.progressBar}>
+        <View style={[styles.progress, { width: `${position}%` }]} />
       </View>
-      <Button title="Next" onPress={handleNext} />
+      <View style={styles.interaction}>
+        <Text>interaction goes here...</Text>
+      </View>
+      <View style={styles.buttons}>
+        <Button
+          title={playing ? "Pause" : "Resume"}
+          onPress={handlePlayToggle}
+        />
+        <Button title="Next" onPress={handleNext} />
+      </View>
       {error && <Text>Error: {JSON.stringify(error)}</Text>}
     </View>
   );
@@ -70,7 +93,7 @@ function CurrentChapter({
 
 function StartShow({ onStart: handleStart }: { onStart: () => void }) {
   return (
-    <View style={{ flexDirection: "row", gap: 16 }}>
+    <View style={styles.container}>
       <Button title="Start Show" onPress={handleStart} />
     </View>
   );
@@ -78,9 +101,29 @@ function StartShow({ onStart: handleStart }: { onStart: () => void }) {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
     alignItems: "center",
+    margin: 16,
     flex: 1,
+    gap: 16,
+  },
+  progressBar: {
+    height: 8,
+    borderRadius: 4,
+    width: "100%",
+    backgroundColor: "#eee",
+  },
+  interaction: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progress: {
+    height: "100%",
+    borderRadius: 4,
+    backgroundColor: "green",
+  },
+  buttons: {
+    flexDirection: "row",
     gap: 16,
   },
 });
