@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Camera, CameraType } from "expo-camera";
 import { BarCodeScannerResult } from "expo-barcode-scanner";
@@ -18,6 +18,10 @@ export default function Scan({ navigation }: RootScreenProps<"scan">) {
     setScanned(true);
     setResult({ data, type, bounds, cornerPoints });
   };
+
+  useEffect(() => {
+    if (!permission?.granted) requestPermission();
+  }, []);
 
   if (!permission?.granted) return <Text>No access to camera</Text>;
 
