@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "platforms": ["ios", "android", "web"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -13,27 +14,39 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      },
+      "bundleIdentifier": "com.afterburner.app"
     },
     "android": {
       "package": "com.afterburner.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       [
-        "expo-barcode-scanner",
-        { "cameraPermission": "Allow $(PRODUCT_NAME) to access camera." }
-      ],
-      [
         "expo-camera",
-        { "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera." }
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "12f206a6-a671-49a0-900f-4cd1edf2adb9"
+      }
+    }
   }
 }

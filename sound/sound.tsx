@@ -6,11 +6,18 @@ import {
 } from "expo-av";
 import { useState, useEffect, useRef } from "react";
 
+export const DOWNLOAD_FIRST = false; // download and play simultaneously
+
 export async function loadSound(
   file: AVPlaybackSource,
   onStatusChange?: (status: AVPlaybackStatus) => void
 ) {
-  return await Audio.Sound.createAsync(file, {}, onStatusChange);
+  return await Audio.Sound.createAsync(
+    file,
+    {},
+    onStatusChange,
+    DOWNLOAD_FIRST
+  );
 }
 export async function unloadSound(sound: Audio.Sound) {
   const status = await sound.unloadAsync();
