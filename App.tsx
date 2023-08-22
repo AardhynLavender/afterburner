@@ -7,6 +7,7 @@ import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import { loadAsync } from "expo-font";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { registerRootComponent } from "expo";
 
 const stdProps: BottomTabNavigationOptions = {
   tabBarShowLabel: false,
@@ -98,3 +99,5 @@ export default function App() {
     </QueryClientProvider>
   );
 }
+
+registerRootComponent(App);
