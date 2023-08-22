@@ -13,7 +13,8 @@
     "build": "eas build --platform all",
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios",
-    "internal:android": "eas build -p android --profile preview"
+    "internal:android": "eas build -p android --profile preview",
+    "logcat:android": "adb -d logcat | grep com.afterburner.app"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.18.2",
