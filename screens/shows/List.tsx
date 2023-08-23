@@ -41,7 +41,7 @@ function ShowCard({
         <Image
           style={styles.showThumb}
           contentFit="cover"
-          placeholder={"eZP%CbIU.Ax]RO%LWVa}ofof.9ofIAV@WBxuoekCR+WBtRjuROa|tS"}
+          placeholder={"L85iZ:%78wNo%QtTR$Mw8^R#*0WG"}
         />
         <View style={styles.cardMeta}>
           <Text style={styles.showHeading}>{show.name}</Text>

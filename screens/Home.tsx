@@ -1,18 +1,18 @@
-import { useFonts } from "expo-font";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { RootScreenProps } from "../navigation";
 
-export default function Home({ navigation }: RootScreenProps<"home">) {
+export default function Home({ navigation: _ }: RootScreenProps<"home">) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.cardHeading}>👋 Welcome</Text>
         <Text>
-          Afterburner is an interactive component for live performances.
+          Afterburner serves as an interactive component for live performances.
         </Text>
         <Text>
-          Providing auto cues and information to the audience as they experience
+          Providing auto cues and information to the audience as they
+          participate in the show
         </Text>
       </View>
     </View>

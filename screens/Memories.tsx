@@ -7,7 +7,7 @@ export default function Memories({}: RootScreenProps<"memories">) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.cardHeading}>💭 No memories yet</Text>
+        <Text style={styles.cardHeading}>No memories yet</Text>
         <Text style={styles.body}>Participate in a show and create some!</Text>
       </View>
     </View>

@@ -26,13 +26,13 @@ export type InteractionPrimitive = {
   end_timestamp?: number; // undefined indicates the end
 };
 
-export type NextInteraction = InteractionPrimitive & { type: "next" };
+export type NextChapterInteraction = InteractionPrimitive & { type: "next" };
 export type HeroInteraction = InteractionPrimitive & {
   type: "hero";
   text: string;
 };
 
-export type Interaction = NextInteraction | HeroInteraction;
+export type Interaction = NextChapterInteraction | HeroInteraction;
 
 export const chapters: Chapter[] = [
   {
@@ -56,7 +56,7 @@ export const chapters: Chapter[] = [
       {
         type: "hero",
         end_timestamp: 6000,
-        text: "Find an area with two hanging hand black and white photos",
+        text: "Find an area with two hanging black and white photos",
       },
       {
         type: "next",

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { invariant } from "../../../exception/invariant";
 import { ShowScreenProps } from "../../../navigation";
 import useSound from "../../../sound/sound";
@@ -9,6 +9,8 @@ import { Chapter, chapters } from "../../../static";
 import { START_MS } from "../../../sound/sound";
 import { ChapterProvider } from "./context";
 import Interaction from "./Interaction";
+import StartShow from "./StartShow";
+import Button from "../../../components/ui/Button";
 
 export default function Show({ route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
@@ -41,7 +43,13 @@ export default function Show({ route }: ShowScreenProps<"show">) {
       />
     );
 
-  return <StartShow onStart={handleStart} />;
+  return (
+    <StartShow
+      onStart={handleStart}
+      title={"The Anderson Localization"}
+      description={"Don't start yet! we'll let you know when to begin"}
+    />
+  );
 }
 
 function CurrentChapter({
@@ -89,21 +97,14 @@ function CurrentChapter({
         />
       </ChapterProvider>
       <View style={styles.buttons}>
-        <Button
-          title={playing ? "Pause" : "Resume"}
-          onPress={handlePlayToggle}
-        />
-        <Button title="Next" onPress={handleNext} />
+        {/* <Button onPress={handlePlayToggle} style={{ alignItems: "center" }}>
+          {playing ? "Pause" : "Resume"}
+        </Button> */}
+        <Button onPress={handleNext} style={{ alignItems: "center" }}>
+          Pause
+        </Button>
       </View>
       {error && <Text>Error: {JSON.stringify(error)}</Text>}
-    </View>
-  );
-}
-
-function StartShow({ onStart: handleStart }: { onStart: () => void }) {
-  return (
-    <View style={styles.container}>
-      <Button title="Start Show" onPress={handleStart} />
     </View>
   );
 }
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
   },
   buttons: {
-    flexDirection: "row",
     gap: 16,
+    width: "100%",
   },
 });
