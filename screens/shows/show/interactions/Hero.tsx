@@ -1,10 +1,22 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import type { HeroInteraction } from "../../../../static";
 
-export function HeroInteraction() {
+export function HeroInteraction({
+  interaction,
+}: {
+  interaction: HeroInteraction;
+}) {
   return (
     <View>
-      <Text>Find a thing</Text>
+      <Text style={styles.text}>{interaction.text}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 32,
+    textAlign: "center",
+  },
+});

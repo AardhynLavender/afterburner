@@ -1,8 +1,13 @@
 import React from "react";
-import { View, Button, Text } from "react-native";
+import { View, Button } from "react-native";
+import type { NextChapterInteraction } from "../../../../static";
 import { useChapterContext } from "../context";
 
-export function NextChapterInteraction() {
+export function NextChapterInteraction({
+  interaction: _,
+}: {
+  interaction: NextChapterInteraction;
+}) {
   const { next } = useChapterContext();
 
   return (

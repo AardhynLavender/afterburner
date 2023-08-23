@@ -30,9 +30,11 @@ export default function Interaction({
       activeInteractions?.map((interaction, key) => {
         switch (interaction.type) {
           case "next":
-            return <NextChapterInteraction key={key} />;
+            return (
+              <NextChapterInteraction key={key} interaction={interaction} />
+            );
           case "hero":
-            return <HeroInteraction key={key} />;
+            return <HeroInteraction key={key} interaction={interaction} />;
           default:
             throw new Error(`Unknown interaction type: ${interaction}`);
         }
