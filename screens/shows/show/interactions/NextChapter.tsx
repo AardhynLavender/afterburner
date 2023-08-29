@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Button } from "react-native";
+import { View } from "react-native";
+import Button from "../../../../components/ui/Button";
 import type { NextChapterInteraction } from "../../../../static";
 import { useChapterContext } from "../context";
 
@@ -12,7 +13,7 @@ export function NextChapterInteraction({
 
   return (
     <View>
-      <Button title="Next Track" onPress={next} />
+      <Button onPress={next}>Next Track</Button>
     </View>
   );
 }

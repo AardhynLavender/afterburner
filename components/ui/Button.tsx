@@ -52,6 +52,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    alignItems: "center",
+    width: "100%",
   },
   disabled: {
     backgroundColor: "#b8c3cc",

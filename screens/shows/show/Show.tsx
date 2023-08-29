@@ -11,6 +11,7 @@ import { ChapterProvider } from "./context";
 import Interaction from "./Interaction";
 import StartShow from "./StartShow";
 import Button from "../../../components/ui/Button";
+import SplashScreen from "../../SplashScreen";
 
 export default function Show({ route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
@@ -59,6 +60,8 @@ function CurrentChapter({
   chapter: Chapter;
   onNext: () => void;
 }) {
+  const isDev = process.env.EXPO_PUBLIC_IS_DEV === "true";
+
   const [position, setPosition] = useState(0);
 
   const handleNext = () => {
@@ -71,7 +74,7 @@ function CurrentChapter({
     { autoPlay: true, onTick: setPosition }
   );
 
-  if (!isLoaded) return <Text>Loading...</Text>;
+  if (!isLoaded) return <SplashScreen />;
 
   const handlePlayToggle = () => {
     if (playing) pause();
@@ -97,12 +100,16 @@ function CurrentChapter({
         />
       </ChapterProvider>
       <View style={styles.buttons}>
-        {/* <Button onPress={handlePlayToggle} style={{ alignItems: "center" }}>
-          {playing ? "Pause" : "Resume"}
-        </Button> */}
-        <Button onPress={handleNext} style={{ alignItems: "center" }}>
-          Pause
-        </Button>
+        <View style={{ width: isDev ? "80%" : "100%" }}>
+          <Button onPress={handlePlayToggle}>
+            {playing ? "Pause" : "Resume"}
+          </Button>
+        </View>
+        {isDev && (
+          <View style={{ width: "20%" }}>
+            <Button onPress={handleNext}>Next</Button>
+          </View>
+        )}
       </View>
       {error && <Text>Error: {JSON.stringify(error)}</Text>}
     </View>
@@ -133,6 +140,6 @@ const styles = StyleSheet.create({
   },
   buttons: {
     gap: 16,
-    width: "100%",
+    flexDirection: "row",
   },
 });
