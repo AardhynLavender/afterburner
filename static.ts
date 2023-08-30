@@ -26,7 +26,10 @@ export type InteractionPrimitive = {
   end_timestamp?: number; // undefined indicates the end
 };
 
-export type NextChapterInteraction = InteractionPrimitive & { type: "next" };
+export type NextChapterInteraction = InteractionPrimitive & {
+  type: "next";
+  text?: string;
+};
 export type HeroInteraction = InteractionPrimitive & {
   type: "hero";
   text: string;
@@ -41,6 +44,11 @@ export const chapters: Chapter[] = [
     file_name: "Track-1",
     audio_file: require("./assets/audio/Track-1.mp3"),
     interactions: [
+      {
+        type: "hero",
+        text: "Welcome to the Source",
+        start_timestamp: 83703,
+      },
       {
         type: "next",
         start_timestamp: -1000,
@@ -60,6 +68,7 @@ export const chapters: Chapter[] = [
       },
       {
         type: "next",
+        text: "I've found them",
         start_timestamp: -1000,
       },
     ],
@@ -70,6 +79,24 @@ export const chapters: Chapter[] = [
     file_name: "Track-2B",
     audio_file: require("./assets/audio/Track-2B.mp3"),
     interactions: [
+      {
+        type: "hero",
+        text: "Look at the photo to the left",
+        start_timestamp: 3000,
+        end_timestamp: 106000,
+      },
+      {
+        type: "hero", // todo: map!
+        text: "<display map>",
+        start_timestamp: 14400,
+        end_timestamp: 110000,
+      },
+      {
+        type: "hero",
+        text: "Look at the photo on the right",
+        start_timestamp: 110000,
+        end_timestamp: 107274,
+      },
       {
         type: "next",
         start_timestamp: -1000,
@@ -83,8 +110,14 @@ export const chapters: Chapter[] = [
     audio_file: require("./assets/audio/Track-3.mp3"),
     interactions: [
       {
+        type: "hero",
+        text: "Find the picture of a cat and a box",
+        start_timestamp: 1500,
+        end_timestamp: 99100,
+      },
+      {
         type: "next",
-        start_timestamp: -1000,
+        start_timestamp: -1800,
       },
     ],
   },
@@ -94,6 +127,17 @@ export const chapters: Chapter[] = [
     file_name: "Track-4",
     audio_file: require("./assets/audio/Track-4.mp3"),
     interactions: [
+      {
+        type: "hero",
+        text: "Walk around the space",
+        start_timestamp: 1800,
+        end_timestamp: 90000,
+      },
+      {
+        type: "hero",
+        text: "Find a particle",
+        start_timestamp: 95000,
+      },
       {
         type: "next",
         start_timestamp: -1000,

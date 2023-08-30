@@ -60,9 +60,9 @@ function displayInteraction(
   const end = endRelative < 0 ? duration - endRelative : endRelative;
 
   if (start < 0 || start > duration)
-    throw new Error(`Invalid start timestamp: ${start}`);
+    console.error(`Invalid start timestamp: ${start}`);
   if (end < 0 || end > duration)
-    throw new Error(`Invalid end timestamp: ${end}`);
+    console.error(`Invalid end timestamp: ${end}. Duration: ${duration}`);
 
   return start <= position && position <= end;
 }
