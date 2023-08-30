@@ -6,6 +6,7 @@ import { ShowScreenProps } from "../../navigation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getShows, useShowsListQuery } from "../../api/shows";
 import { Show } from "../../types/supabase";
+import SplashScreen from "../SplashScreen";
 
 export default function ShowList({ navigation }: ShowScreenProps<"list">) {
   const toShow = (showId: number) => () =>
@@ -13,7 +14,7 @@ export default function ShowList({ navigation }: ShowScreenProps<"list">) {
 
   const { data: shows, error, isLoading } = useShowsListQuery();
 
-  if (isLoading && !shows) return <Text>Loading...</Text>;
+  if (isLoading && !shows) return <SplashScreen />;
   if (error) return <Text>Error loading shows</Text>;
   if (!shows) return <Text>No shows found</Text>;
 
