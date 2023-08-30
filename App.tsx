@@ -40,7 +40,7 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
           <RootTabNavigator initialRouteName="scan">
-            <RootTabScreen
+            {/* <RootTabScreen
               name="home"
               component={Home}
               options={{
@@ -50,7 +50,7 @@ export default function App() {
                 ),
                 ...stdProps,
               }}
-            />
+            /> */}
             <RootTabScreen
               name="shows"
               component={Shows}
@@ -74,7 +74,7 @@ export default function App() {
                 ...stdProps,
               }}
             />
-            <RootTabScreen
+            {/* <RootTabScreen
               name="memories"
               component={Memories}
               options={{
@@ -84,7 +84,7 @@ export default function App() {
                 ),
                 ...stdProps,
               }}
-            />
+            /> */}
             <RootTabScreen
               name="settings"
               component={Settings}
