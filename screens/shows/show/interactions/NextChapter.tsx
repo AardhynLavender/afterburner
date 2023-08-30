@@ -1,11 +1,13 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import Button from "../../../../components/ui/Button";
 import type { NextChapterInteraction } from "../../../../static";
 import { useChapterContext } from "../context";
 
+const DEFAULT_NEXT_TEXT = "Next Chapter";
+
 export function NextChapterInteraction({
-  interaction: _,
+  interaction,
 }: {
   interaction: NextChapterInteraction;
 }) {
@@ -13,7 +15,7 @@ export function NextChapterInteraction({
 
   return (
     <View>
-      <Button onPress={next}>Next Track</Button>
+      <Button onPress={next}>{interaction.text ?? DEFAULT_NEXT_TEXT}</Button>
     </View>
   );
 }
