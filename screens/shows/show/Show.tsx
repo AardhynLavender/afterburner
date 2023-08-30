@@ -69,12 +69,15 @@ function CurrentChapter({
     onNext();
   };
 
-  const { isLoaded, playing, error, play, pause, duration } = useSound(
+  const { isLoaded, playing, error, play, pause, duration, seek } = useSound(
     chapter.audio_file,
     { autoPlay: true, onTick: setPosition }
   );
 
   if (!isLoaded) return <SplashScreen />;
+
+  const seekBackward = () => seek(-1000);
+  const seekForward = () => seek(1000);
 
   const handlePlayToggle = () => {
     if (playing) pause();
@@ -91,6 +94,19 @@ function CurrentChapter({
             { width: `${(position / duration) * 100}%` },
           ]}
         />
+        <View style={styles.durationContainer}>
+          <Text style={styles.duration}>{formatTime(position)}</Text>
+          {isDev && (
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Button onPress={seekBackward}>-1s</Button>
+              <Text>
+                {position}|{duration}
+              </Text>
+              <Button onPress={seekForward}>+1s</Button>
+            </View>
+          )}
+          <Text style={styles.duration}>{formatTime(duration)}</Text>
+        </View>
       </View>
       <ChapterProvider chapter={chapter} next={handleNext}>
         <Interaction
@@ -116,6 +132,19 @@ function CurrentChapter({
   );
 }
 
+function formatTime(timeMs: number) {
+  const seconds = Math.floor(timeMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  return `${hours ? `${formatTimeValue(hours)}:` : ""}${formatTimeValue(
+    minutes % 60
+  )}:${formatTimeValue(seconds % 60)}`;
+}
+function formatTimeValue(value: number) {
+  return value.toString().padStart(2, "0");
+}
+
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
@@ -130,6 +159,7 @@ const styles = StyleSheet.create({
   progressBar: {
     height: 8,
     borderRadius: 4,
+    gap: 8,
     width: "100%",
     backgroundColor: "#eee",
   },
@@ -137,6 +167,16 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 4,
     backgroundColor: "green",
+  },
+  durationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    items: "center",
+    height: 32,
+  },
+  duration: {
+    fontSize: 12,
+    color: "#999",
   },
   buttons: {
     gap: 16,

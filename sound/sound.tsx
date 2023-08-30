@@ -65,9 +65,9 @@ export default function useSound(
 
   const handleError =
     <T,>(callback: (...args: any) => T, unhandledErrorMessage: string) =>
-    () => {
+    (...args: any) => {
       try {
-        return callback();
+        return callback(...args);
       } catch (error) {
         console.error("error while processing ", callback);
         if (error instanceof Error) setError(error);
@@ -119,6 +119,10 @@ export default function useSound(
     return status;
   }, "Unknown error ocurred while getting sound status");
 
+  const setStatus = handleError(async (status: AVPlaybackStatus) => {
+    await sound?.setStatusAsync(status);
+  }, "Unknown error ocurred while setting sound status");
+
   const getPosition = handleError(async () => {
     const status = await getStatus();
     const position = status?.positionMillis;
@@ -156,6 +160,12 @@ export default function useSound(
     setPlaying(false);
   }, "Unknown error ocurred while pausing sound");
 
+  const seek = handleError(async (by: number) => {
+    const status = await getStatus();
+    if (!status) throw new Error("Sound is not loaded");
+    await setStatus({ ...status, positionMillis: status.positionMillis + by });
+  }, "Unknown error ocurred while seeking sound");
+
   return {
     /**
      * Play the sound
@@ -183,6 +193,10 @@ export default function useSound(
      * @default null
      */
     error,
+    /**
+     * Seek the sound by a given number of milliseconds
+     */
+    seek,
     /**
      * Get the duration of the sound
      */
