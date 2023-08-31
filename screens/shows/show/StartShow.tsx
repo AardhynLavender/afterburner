@@ -12,8 +12,7 @@ export default function StartShow({
   title: string;
   description: string;
 }) {
-  const { permission, handleScan } = useTicketScanner();
-  const scanned = true;
+  const { scanned, permission, handleScan } = useTicketScanner();
 
   return (
     <View style={styles.container}>
