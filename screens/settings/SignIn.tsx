@@ -4,20 +4,21 @@ import { TextInput } from "react-native-gesture-handler";
 import Button from "../../components/ui/Button";
 import { authenticate, AuthenticationError } from "../../api/authenticate";
 import { SettingsScreenProps } from "../../navigation";
+import UnhandledError from "../../exception/unhandled";
 
 export default function SignIn({ navigation }: SettingsScreenProps<"signIn">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<AuthenticationError>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
       setError(null);
-      authenticate(email, password);
-      navigation.navigate("settings");
+      await authenticate(email, password);
+      navigation.navigate("settingList");
     } catch (error) {
       if (error instanceof Error) setError(error);
-      else setError(new Error("An unknown error occurred"));
+      throw new UnhandledError("Failed to sign in"); // this should never be thrown
     }
   };
 
