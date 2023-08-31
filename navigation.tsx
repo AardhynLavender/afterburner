@@ -14,6 +14,7 @@ export type RootNavigation = {
   shows: undefined;
   scan: undefined;
   memories: undefined;
+  showings: undefined;
   settings: undefined;
 };
 export const { Navigator: RootTabNavigator, Screen: RootTabScreen } =
@@ -24,7 +25,7 @@ export type RootScreenProps<T extends keyof RootNavigation> =
 // Shows //
 
 export type ShowNavigation = {
-  list: undefined;
+  showList: undefined;
   show: { showId: number | null };
 };
 export const { Navigator: ShowStackNavigator, Screen: ShowStackScreen } =
@@ -34,10 +35,21 @@ export type ShowScreenProps<T extends keyof ShowNavigation> = StackScreenProps<
   T
 >;
 
+// showings //
+
+export type ShowingNavigation = {
+  showing: { showingId: number | null };
+  showingList: undefined;
+};
+export const { Navigator: ShowingStackNavigator, Screen: ShowingStackScreen } =
+  createStackNavigator<ShowingNavigation>();
+export type ShowingScreenProps<T extends keyof ShowingNavigation> =
+  StackScreenProps<ShowingNavigation, T>;
+
 // Settings //
 
 export type SettingsNavigation = {
-  settings: undefined;
+  settingList: undefined;
   signIn: undefined;
 };
 export const {
