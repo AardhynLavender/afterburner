@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { registerRootComponent } from "expo";
 import { SafeAreaProvider } from "react-native-safe-area-view";
+import AuthProvider from "./contexts/auth";
 
 const stdProps: BottomTabNavigationOptions = {
   tabBarShowLabel: false,
@@ -38,9 +39,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <NavigationContainer>
-          <RootTabNavigator initialRouteName="scan">
-            {/* <RootTabScreen
+        <AuthProvider>
+          <NavigationContainer>
+            <RootTabNavigator initialRouteName="scan">
+              {/* <RootTabScreen
               name="home"
               component={Home}
               options={{
@@ -51,30 +53,30 @@ export default function App() {
                 ...stdProps,
               }}
             /> */}
-            <RootTabScreen
-              name="shows"
-              component={Shows}
-              options={{
-                title: "Shows",
-                tabBarIcon: ({ color, size }) => (
-                  <Fi name="info" size={size} color={color} />
-                ),
-                ...stdProps,
-              }}
-            />
-            <RootTabScreen
-              name="scan"
-              component={Scan}
-              options={{
-                title: "Scan Ticket",
-                unmountOnBlur: true, // unmount camera when not in view
-                tabBarIcon: ({ color, size }) => (
-                  <Fi name="camera" size={size} color={color} />
-                ),
-                ...stdProps,
-              }}
-            />
-            {/* <RootTabScreen
+              <RootTabScreen
+                name="shows"
+                component={Shows}
+                options={{
+                  title: "Shows",
+                  tabBarIcon: ({ color, size }) => (
+                    <Fi name="info" size={size} color={color} />
+                  ),
+                  ...stdProps,
+                }}
+              />
+              <RootTabScreen
+                name="scan"
+                component={Scan}
+                options={{
+                  title: "Scan Ticket",
+                  unmountOnBlur: true, // unmount camera when not in view
+                  tabBarIcon: ({ color, size }) => (
+                    <Fi name="camera" size={size} color={color} />
+                  ),
+                  ...stdProps,
+                }}
+              />
+              {/* <RootTabScreen
               name="memories"
               component={Memories}
               options={{
@@ -85,19 +87,20 @@ export default function App() {
                 ...stdProps,
               }}
             /> */}
-            <RootTabScreen
-              name="settings"
-              component={Settings}
-              options={{
-                title: "User Settings",
-                tabBarIcon: ({ color, size }) => (
-                  <Fi name="settings" size={size} color={color} />
-                ),
-                ...stdProps,
-              }}
-            />
-          </RootTabNavigator>
-        </NavigationContainer>
+              <RootTabScreen
+                name="settings"
+                component={Settings}
+                options={{
+                  title: "User Settings",
+                  tabBarIcon: ({ color, size }) => (
+                    <Fi name="settings" size={size} color={color} />
+                  ),
+                  ...stdProps,
+                }}
+              />
+            </RootTabNavigator>
+          </NavigationContainer>
+        </AuthProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );
