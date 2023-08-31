@@ -1,6 +1,6 @@
 import React from "react";
 import Show from "./show/Show";
-import ShowList from "./List";
+import ShowList from "./ShowsList";
 import {
   RootScreenProps,
   ShowStackNavigator,
@@ -13,10 +13,10 @@ const options: StackNavigationOptions = {
   animationEnabled: false,
 };
 
-export default function Shows({ navigation }: RootScreenProps<"shows">) {
+export default function Shows({}: RootScreenProps<"shows">) {
   return (
-    <ShowStackNavigator initialRouteName="list">
-      <ShowStackScreen options={options} name="list" component={ShowList} />
+    <ShowStackNavigator initialRouteName="showList">
+      <ShowStackScreen options={options} name="showList" component={ShowList} />
       <ShowStackScreen
         name="show"
         component={Show}

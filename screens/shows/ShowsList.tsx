@@ -5,10 +5,10 @@ import { Image } from "expo-image";
 import { ShowScreenProps } from "../../navigation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getShows, useShowsListQuery } from "../../api/shows";
-import { Show } from "../../types/supabase";
+import { Show } from "../../api/types";
 import SplashScreen from "../SplashScreen";
 
-export default function ShowList({ navigation }: ShowScreenProps<"list">) {
+export default function ShowList({ navigation }: ShowScreenProps<"showList">) {
   const toShow = (showId: number) => () =>
     navigation.navigate("show", { showId });
 

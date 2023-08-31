@@ -1,6 +1,6 @@
 import { StackNavigationOptions } from "@react-navigation/stack";
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { signOut } from "../../api/authenticate";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../../contexts/auth";
@@ -19,10 +19,10 @@ const options: StackNavigationOptions = {
 
 export default function Settings({}: RootScreenProps<"settings">) {
   return (
-    <SettingsStackNavigator initialRouteName="settings">
+    <SettingsStackNavigator initialRouteName="settingList">
       <SettingsStackScreen
         options={options}
-        name="settings"
+        name="settingList"
         component={SettingsList}
       />
       <SettingsStackScreen
@@ -34,14 +34,14 @@ export default function Settings({}: RootScreenProps<"settings">) {
   );
 }
 
-function SettingsList({ navigation }: SettingsScreenProps<"settings">) {
+function SettingsList({ navigation }: SettingsScreenProps<"settingList">) {
   const handleSignIn = () => navigation.navigate("signIn");
   const handleSignOut = () => signOut();
 
   const { user } = useAuth();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.card}>
         {user ? (
           <View style={styles.setting}>
@@ -60,7 +60,7 @@ function SettingsList({ navigation }: SettingsScreenProps<"settings">) {
           <Text>{JSON.stringify(user, null, 2)}</Text>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 

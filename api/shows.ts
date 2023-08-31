@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../supabase";
 
-const SHOWS_KEY = ["shows"];
+const SHOWS_KEY = ["show"];
 export async function getShows() {
-  const { data, error } = await supabase.from("Show").select("*");
+  const { data, error } = await supabase.from("show").select("*");
   if (error) throw error;
   return data ?? [];
 }
