@@ -106,7 +106,7 @@ export interface Database {
       ticket: {
         Row: {
           created_at: string
-          expiry_date: string
+          expiry_date: string | null
           id: number
           key: string | null
           meta: Json | null
@@ -114,7 +114,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
-          expiry_date: string
+          expiry_date?: string | null
           id?: number
           key?: string | null
           meta?: Json | null
@@ -122,7 +122,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
-          expiry_date?: string
+          expiry_date?: string | null
           id?: number
           key?: string | null
           meta?: Json | null
@@ -142,7 +142,13 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_ticket: {
+        Args: {
+          showing_id: number
+          meta?: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

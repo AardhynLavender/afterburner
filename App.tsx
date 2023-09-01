@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { loadAsync } from "expo-font";
 import { useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { registerRootComponent } from "expo";
 import { SafeAreaProvider } from "react-native-safe-area-view";
 import AuthProvider from "./contexts/auth";
 import Layout from "./Layout";
+import { QueryClientProvider } from "./api/client";
 
 async function load() {
   await loadAsync({
@@ -21,8 +21,6 @@ function useLoading() {
   return loading;
 }
 
-const queryClient = new QueryClient();
-
 export default function App() {
   const loading = useLoading();
 
@@ -30,7 +28,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider>
         <AuthProvider>
           <Layout />
         </AuthProvider>
