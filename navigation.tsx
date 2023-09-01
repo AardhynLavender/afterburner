@@ -39,6 +39,7 @@ export type ShowScreenProps<T extends keyof ShowNavigation> = StackScreenProps<
 
 export type ShowingNavigation = {
   showing: { showingId: number | null };
+  newShowing: undefined;
   showingList: undefined;
 };
 export const { Navigator: ShowingStackNavigator, Screen: ShowingStackScreen } =

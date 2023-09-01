@@ -10,3 +10,17 @@ export async function getShows() {
 export function useShowsListQuery() {
   return useQuery(SHOWS_KEY, getShows);
 }
+
+export async function getShow(id: number) {
+  const { data, error } = await supabase
+    .from("show")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data ?? [];
+}
+export function useShowQuery(id: number) {
+  return useQuery([...SHOWS_KEY, id], () => getShow(id));
+}
