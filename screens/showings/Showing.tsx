@@ -1,16 +1,33 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  Platform,
+  ScrollViewProps,
+} from "react-native";
 import { useShowingGetQuery } from "../../api/showings";
 import { ShowingScreenProps } from "../../navigation";
 import { invariant } from "../../exception/invariant";
 import SplashScreen from "../SplashScreen";
-import Ticket from "./Ticket";
-import { useTicketListQuery } from "../../api/ticket";
+import { Ticket } from "../../api/types";
+import { encodeTicket, useTicketListQuery } from "../../api/ticket";
+import QRCode from "react-native-qrcode-svg";
 
-export default function Showing({
-  navigation,
-  route,
-}: ShowingScreenProps<"showing">) {
+// Horizontal scrolling
+// @see https://medium.com/nerd-for-tech/react-native-create-a-horizontal-snap-scrollview-e1d01ac3ba09
+
+const WINDOW_WIDTH = Dimensions.get("window").width;
+const CARD_WIDTH_PERCENT = 0.75;
+const CARD_WIDTH = WINDOW_WIDTH * CARD_WIDTH_PERCENT;
+const CARD_GAP = 16;
+const CARD_PADDING = 48;
+const END_CARD_INSET_PERCENT = (1 - CARD_WIDTH_PERCENT) / 2;
+const END_CARD_INSET = WINDOW_WIDTH * END_CARD_INSET_PERCENT - CARD_GAP / 2;
+
+export default function Showing({ route }: ShowingScreenProps<"showing">) {
   const { showingId } = route.params;
   invariant(showingId, "`showingId` is required");
 
@@ -23,20 +40,11 @@ export default function Showing({
 
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.tickets}>
-          {tickets?.map((ticket) => {
-            return (
-              <View style={styles.ticket} key={ticket.id}>
-                <Text>
-                  {ticket.id} {ticket.claimed ? "claimed" : "free"}
-                </Text>
-                <Ticket ticket={ticket} />
-              </View>
-            );
-          })}
-        </View>
-      </ScrollView>
+      <CardScrollView>
+        {tickets?.map((ticket) => (
+          <TicketCard ticket={ticket} key={ticket.id} />
+        ))}
+      </CardScrollView>
       <View style={styles.metadata}>
         <Text style={styles.heading}>{showing?.show.name}</Text>
         <Text>{showing?.show.description}</Text>
@@ -45,28 +53,62 @@ export default function Showing({
   );
 }
 
+function CardScrollView({ children, ...scrollViewProps }: ScrollViewProps) {
+  return (
+    <ScrollView
+      horizontal
+      pagingEnabled
+      decelerationRate={0}
+      snapToInterval={CARD_WIDTH + CARD_GAP}
+      snapToAlignment={Platform.OS === "android" ? "start" : "center"}
+      showsHorizontalScrollIndicator={false}
+      contentInset={{
+        // center the end cards on IOS
+        left: END_CARD_INSET,
+        right: END_CARD_INSET,
+      }}
+      contentContainerStyle={{
+        // center the end cards on Android
+        paddingHorizontal: Platform.OS === "android" ? END_CARD_INSET : 0,
+      }}
+      {...scrollViewProps}
+    >
+      {children}
+    </ScrollView>
+  );
+}
+
+function TicketCard({ ticket }: { ticket: Ticket }) {
+  const code = encodeTicket(ticket);
+
+  return (
+    <View style={{ ...styles.ticket, width: CARD_WIDTH }} key={ticket.id}>
+      <QRCode
+        value={code}
+        backgroundColor="transparent"
+        size={CARD_WIDTH - CARD_PADDING * 2}
+      />
+      <Text style={{ flex: 1 }}>Ticket #{ticket.id}</Text>
+      <Text>{ticket.claimed ? "Taken" : "Available"}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    gap: 16,
-    padding: 24,
+    gap: 32,
+    paddingVertical: 24,
   },
-  metadata: { gap: 16 },
-  tickets: {
-    gap: 16,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
+  metadata: { gap: 16, paddingHorizontal: 24 },
   ticket: {
-    padding: 24,
+    padding: CARD_PADDING,
     backgroundColor: "#efefef",
     borderRadius: 32,
     gap: 16,
-    justifyContent: "center",
+    marginHorizontal: CARD_GAP / 2,
     alignItems: "center",
-    alignSelf: "center",
   },
   heading: {
     fontSize: 24,

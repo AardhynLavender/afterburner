@@ -93,8 +93,8 @@ export function useClaimTicket(ticket: PublicTicket | null) {
 export async function getTicketList(showingId: number) {
   const { data, error } = await supabase
     .from("ticket")
-    .select(`id, key, expiry_date, claimed, showing_id, meta`)
-    .order("id", { ascending: false })
+    .select(`id, key, expiry_date, claimed, showing_id, created_at, meta`)
+    .order("id", { ascending: true })
     .eq("showing_id", showingId);
 
   if (error) throw error;
