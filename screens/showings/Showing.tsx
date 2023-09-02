@@ -12,7 +12,7 @@ export default function Showing({
   route,
 }: ShowingScreenProps<"showing">) {
   const { showingId } = route.params;
-  invariant(!!showingId, "`showingId` is required");
+  invariant(showingId, "`showingId` is required");
 
   const { data: showing, isLoading } = useShowingGetQuery(showingId);
   const { data: tickets } = useTicketListQuery(showingId);
@@ -25,16 +25,16 @@ export default function Showing({
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.tickets}>
-          {tickets?.map((ticket) => (
-            <View style={styles.ticket}>
-              <Ticket
-                showingId={showingId}
-                key={ticket.id}
-                ticketKey={ticket.key!}
-                ticketMeta={ticket.meta}
-              />
-            </View>
-          ))}
+          {tickets?.map((ticket) => {
+            return (
+              <View style={styles.ticket} key={ticket.id}>
+                <Text>
+                  {ticket.id} {ticket.claimed ? "claimed" : "free"}
+                </Text>
+                <Ticket ticket={ticket} />
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
       <View style={styles.metadata}>

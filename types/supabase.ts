@@ -105,26 +105,29 @@ export interface Database {
       }
       ticket: {
         Row: {
+          claimed: boolean
           created_at: string
           expiry_date: string | null
           id: number
-          key: string | null
+          key: string
           meta: Json | null
           showing_id: number
         }
         Insert: {
+          claimed?: boolean
           created_at?: string
           expiry_date?: string | null
           id?: number
-          key?: string | null
+          key?: string
           meta?: Json | null
           showing_id: number
         }
         Update: {
+          claimed?: boolean
           created_at?: string
           expiry_date?: string | null
           id?: number
-          key?: string | null
+          key?: string
           meta?: Json | null
           showing_id?: number
         }
@@ -148,6 +151,12 @@ export interface Database {
           meta?: Json
         }
         Returns: undefined
+      }
+      claim_ticket: {
+        Args: {
+          ticket_key: string
+        }
+        Returns: string
       }
     }
     Enums: {

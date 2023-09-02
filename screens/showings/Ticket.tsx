@@ -1,19 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import QRCode from "react-native-qrcode-svg";
-import { TicketMeta } from "../../api/ticket";
+import { PublicTicket, encodeTicket } from "../../api/ticket";
 
-export default function Ticket({
-  showingId,
-  ticketKey,
-  ticketMeta = null,
-}: {
-  showingId: string | number;
-  ticketKey: string | number;
-  ticketMeta: TicketMeta;
-}) {
-  const metaString = JSON.stringify(ticketMeta ?? {});
-  const code = `${showingId}-${ticketKey}-${metaString}`;
+export default function Ticket({ ticket }: { ticket: PublicTicket }) {
+  const code = encodeTicket(ticket);
 
   return (
     <View style={styles.container}>

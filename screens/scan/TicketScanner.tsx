@@ -3,6 +3,7 @@ import { Camera, CameraType } from "expo-camera";
 import React from "react";
 import { useState, useEffect, ReactElement } from "react";
 import { Text, View, StyleSheet } from "react-native";
+import { PublicTicket, extractTicket } from "../../api/ticket";
 
 export default function TicketScanner({
   onScan: handleScan,
@@ -29,16 +30,19 @@ export default function TicketScanner({
 export function useTicketScanner() {
   const [scanned, setScanned] = useState(false);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [result, setResult] = useState<BarCodeScannerResult>();
+  const [ticket, setTicket] = useState<PublicTicket | null>(null);
 
-  const handleScan = ({
-    data,
-    type,
-    bounds,
-    cornerPoints,
-  }: BarCodeScannerResult) => {
+  const handleScan = ({ data }: BarCodeScannerResult) => {
+    if (scanned) return;
+    const ticket = extractTicket(data);
     setScanned(true);
-    setResult({ data, type, bounds, cornerPoints });
+
+    setTicket(ticket);
+  };
+
+  const reset = () => {
+    setScanned(false);
+    setTicket(null);
   };
 
   useEffect(() => {
@@ -47,8 +51,9 @@ export function useTicketScanner() {
 
   return {
     scanned,
+    reset,
+    ticket,
     handleScan,
-    result,
     permission: permission?.granted ?? false,
   };
 }
