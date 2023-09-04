@@ -6,6 +6,8 @@ import { SafeAreaProvider } from "react-native-safe-area-view";
 import AuthProvider from "./contexts/auth";
 import Layout from "./Layout";
 import { QueryClientProvider } from "./api/client";
+import ErrorBoundary from "./exception/boundary";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 async function load() {
   await loadAsync({
@@ -27,13 +29,17 @@ export default function App() {
   if (loading) return null;
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider>
-        <AuthProvider>
-          <Layout />
-        </AuthProvider>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <QueryClientProvider>
+            <AuthProvider>
+              <Layout />
+            </AuthProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
 

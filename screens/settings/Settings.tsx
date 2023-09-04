@@ -55,7 +55,7 @@ function SettingsList({ navigation }: SettingsScreenProps<"settingList">) {
           </View>
         )}
       </View>
-      {process.env.EXPO_PUBLIC_IS_DEV && (
+      {process.env.EXPO_PUBLIC_IS_DEV === "true" && (
         <>
           <Text>{JSON.stringify(user, null, 2)}</Text>
         </>
