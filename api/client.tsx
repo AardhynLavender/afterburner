@@ -5,7 +5,20 @@ import {
 import React from "react";
 
 export const queryClient = new QueryClient({
-  //
+  defaultOptions: {
+    queries: {
+      networkMode: "offlineFirst",
+      staleTime: Infinity,
+      retry: 2,
+    },
+    mutations: {
+      networkMode: "offlineFirst",
+      onSuccess: () => {
+        if (process.env.EXPO_PUBLIC_IS_DEV === "true")
+          queryClient.invalidateQueries();
+      },
+    },
+  },
 });
 
 export const QueryClientProvider = ({

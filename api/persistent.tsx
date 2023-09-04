@@ -1,6 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { invariant } from "../exception/invariant";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { getNativeSourceAndFullInitialStatusForLoadAsync } from "expo-av/build/AV";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "./client";
+
+function invalidateStoreQuery() {
+  queryClient.invalidateQueries(["asyncStorage"]);
+}
+export async function dumpPersistentStore() {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const items = await AsyncStorage.multiGet(keys);
+    const store = Object.fromEntries(items);
+
+    return store;
+  } catch (error) {
+    console.error(error);
+  }
+}
+export function usePersistentDumpQuery() {
+  return useQuery(["persistentDump"], dumpPersistentStore);
+}
 
 export type Primitive = string | number | object | boolean | null;
 export const PrimitiveTypes = [
@@ -15,13 +36,6 @@ class WriteException extends Error {
   public constructor(message: string) {
     super(message);
     this.name = "WriteException";
-  }
-}
-
-class DeserializeException extends Error {
-  public constructor(message: string) {
-    super(message);
-    this.name = "DeserializeException";
   }
 }
 
@@ -47,6 +61,7 @@ export async function write<T extends Primitive>(key: string, value: T) {
   try {
     const writable = serialize(value);
     await AsyncStorage.setItem(key, writable);
+    invalidateStoreQuery();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof Error) throw new WriteException(message);
@@ -68,6 +83,7 @@ export async function read<T extends Primitive>(key: string) {
 export async function remove(key: string) {
   try {
     await AsyncStorage.removeItem(key);
+    invalidateStoreQuery();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof Error) throw new WriteException(message);
@@ -78,6 +94,7 @@ export async function remove(key: string) {
 export async function clear() {
   try {
     await AsyncStorage.clear();
+    invalidateStoreQuery();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (error instanceof Error) throw new WriteException(message);

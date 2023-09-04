@@ -2,6 +2,10 @@ import { StackNavigationOptions } from "@react-navigation/stack";
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { signOut } from "../../api/authenticate";
+import {
+  dumpPersistentStore,
+  usePersistentDumpQuery,
+} from "../../api/persistent";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../../contexts/auth";
 import {
@@ -11,6 +15,7 @@ import {
   SettingsStackScreen,
 } from "../../navigation";
 import SignIn from "./SignIn";
+import { useEffect } from "react";
 
 const options: StackNavigationOptions = {
   headerShown: false,
@@ -58,10 +63,17 @@ function SettingsList({ navigation }: SettingsScreenProps<"settingList">) {
       {process.env.EXPO_PUBLIC_IS_DEV === "true" && (
         <>
           <Text>{JSON.stringify(user, null, 2)}</Text>
+          <Text>{JSON.stringify(process.env, null, 2)}</Text>
+          <PersistantDump />
         </>
       )}
     </ScrollView>
   );
+}
+
+function PersistantDump() {
+  const { data: storeDump } = usePersistentDumpQuery();
+  return <Text>{JSON.stringify(storeDump, null, 2)}</Text>;
 }
 
 const styles = StyleSheet.create({
