@@ -59,7 +59,7 @@ const ticketClaimStatuses = [
   "EXPIRED",
   "INVALID_KEY",
 ] as const;
-type TicketClaim = (typeof ticketClaimStatuses)[number];
+export type TicketClaim = (typeof ticketClaimStatuses)[number];
 function isTicketClaim(status: unknown): status is TicketClaim {
   if (typeof status !== "string") return false;
   return ticketClaimStatuses.includes(status as TicketClaim);

@@ -4,6 +4,7 @@ import React from "react";
 import { useState, useEffect, ReactElement } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { PublicTicket, extractTicket } from "../../api/ticket";
+import UnhandledError from "../../exception/unhandled";
 
 export default function TicketScanner({
   onScan: handleScan,
@@ -31,13 +32,19 @@ export function useTicketScanner() {
   const [scanned, setScanned] = useState(false);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [ticket, setTicket] = useState<PublicTicket | null>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const handleScan = ({ data }: BarCodeScannerResult) => {
     if (scanned) return;
-    const ticket = extractTicket(data);
-    setScanned(true);
-
-    setTicket(ticket);
+    try {
+      setError(null);
+      const ticket = extractTicket(data);
+      setTicket(ticket);
+      setScanned(true);
+    } catch (error) {
+      if (error instanceof Error) setError(error);
+      else setError(new UnhandledError("unknown error"));
+    }
   };
 
   const reset = () => {
@@ -53,6 +60,7 @@ export function useTicketScanner() {
     scanned,
     reset,
     ticket,
+    error,
     handleScan,
     permission: permission?.granted ?? false,
   };
