@@ -2,7 +2,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "../supabase";
 import repeat from "../util/repeat";
 import { queryClient } from "./client";
-import { getShow } from "./shows";
+import { getShowAuthorized, getShowTicketed } from "./shows";
 import { createTicket } from "./ticket";
 import { Showing } from "./types";
 import { invariant } from "../exception/invariant";
@@ -61,7 +61,7 @@ export function useShowingGetQuery(id: number) {
 type CreateShowingParams = Omit<Showing, "id" | "created_at">;
 export async function createShowing(params: CreateShowingParams) {
   // fetch show
-  const show = await getShow(params.show_id);
+  const show = await getShowAuthorized(params.show_id);
   invariant(show, "Show not found");
 
   // create showing

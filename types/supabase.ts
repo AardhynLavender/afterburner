@@ -100,6 +100,12 @@ export interface Database {
             columns: ["show_id"]
             referencedRelation: "show"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showing_show_id_fkey"
+            columns: ["show_id"]
+            referencedRelation: "show_list"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -142,7 +148,30 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      show_list: {
+        Row: {
+          cover_image_key: string | null
+          description: string | null
+          id: number | null
+          max_seats: number | null
+          name: string | null
+        }
+        Insert: {
+          cover_image_key?: string | null
+          description?: string | null
+          id?: number | null
+          max_seats?: number | null
+          name?: string | null
+        }
+        Update: {
+          cover_image_key?: string | null
+          description?: string | null
+          id?: number | null
+          max_seats?: number | null
+          name?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_ticket: {
@@ -157,6 +186,27 @@ export interface Database {
           ticket_key: string
         }
         Returns: string
+      }
+      get_audio: {
+        Args: {
+          show_name: string
+          file_name: string
+          ticket_key: string
+        }
+        Returns: string
+      }
+      get_show: {
+        Args: {
+          show_id: number
+          ticket_key: string
+        }
+        Returns: {
+          id: number
+          name: string
+          description: string
+          max_seats: number
+          cover_image_key: string
+        }[]
       }
     }
     Enums: {

@@ -4,6 +4,7 @@ import { Json } from "../types/supabase";
 import { useQuery } from "@tanstack/react-query";
 import { invariant } from "../exception/invariant";
 import { Ticket } from "./types";
+import { usePersistent, write } from "./persistent";
 
 // Creation //
 
@@ -65,6 +66,11 @@ function isTicketClaim(status: unknown): status is TicketClaim {
   return ticketClaimStatuses.includes(status as TicketClaim);
 }
 
+const PERSISTENT_TICKET_KEY = "active-ticket";
+export function usePersistentTicket(ticket: PublicTicket | null = null) {
+  return usePersistent<PublicTicket | null>(PERSISTENT_TICKET_KEY, ticket);
+}
+
 /**
  * Request that the database marks the ticket as claimed
  * @param ticketKey ticket to claim
@@ -80,11 +86,15 @@ export async function claimTicket(ticketKey: string) {
 
   return status;
 }
-export function useClaimTicket(ticket: PublicTicket | null) {
+type ClaimTicketOptions = { claim?: boolean };
+export function useClaimTicket(
+  ticket: PublicTicket | null,
+  { claim }: ClaimTicketOptions = { claim: true }
+) {
   return useQuery(
     ["claim_ticket", ticket?.key],
     () => ticket && claimTicket(ticket.key),
-    { enabled: !!ticket }
+    { enabled: !!ticket && claim }
   );
 }
 
@@ -101,7 +111,9 @@ export async function getTicketList(showingId: number) {
   return data;
 }
 export function useTicketListQuery(showingId: number) {
-  return useQuery([showingId, "ticket"], () => getTicketList(showingId));
+  return useQuery(["tickets", showingId, "ticket"], () =>
+    getTicketList(showingId)
+  );
 }
 
 export async function getTicket(id: string) {

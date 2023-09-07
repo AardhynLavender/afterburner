@@ -12,6 +12,8 @@ import Interaction from "./Interaction";
 import StartShow from "./StartShow";
 import Button from "../../../components/ui/Button";
 import SplashScreen from "../../SplashScreen";
+import { useShowingGetQuery } from "../../../api/showings";
+import { useShowGetTicketedQuery } from "../../../api/shows";
 
 export default function Show({ route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
@@ -33,6 +35,10 @@ export default function Show({ route }: ShowScreenProps<"show">) {
     setRunning(true);
     setCurrentTrack(0);
   };
+
+  const [activeTicket] = usePersistent<string>("active-ticket", null);
+  const { data: show, error } = useShowGetTicketedQuery(1, activeTicket);
+  console.log(show);
 
   if (reading) return <Text>Loading...</Text>;
 

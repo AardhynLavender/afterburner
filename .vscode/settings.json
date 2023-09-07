@@ -1,10 +1,14 @@
 {
   "cSpell.words": [
+    "appspot",
     "datetimepicker",
+    "firebaseapp",
     "Millis",
     "qrcode",
     "supabase",
     "tanstack",
     "typecheck"
-  ]
+  ],
+  "deno.enablePaths": ["./supabase/functions"],
+  "deno.importMap": "./supabase/functions/import_map.json"
 }
