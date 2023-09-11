@@ -3,8 +3,8 @@ import { Camera, CameraType } from "expo-camera";
 import React from "react";
 import { useState, useEffect, ReactElement } from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { write, usePersistent } from "../../api/persistent";
-import { PublicTicket, extractTicket } from "../../api/ticket";
+import { extractTicket } from "../../api/ticket";
+import { PublicTicket } from "../../api/types";
 import UnhandledError from "../../exception/unhandled";
 
 export default function TicketScanner({

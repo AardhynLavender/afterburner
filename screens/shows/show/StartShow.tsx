@@ -25,7 +25,7 @@ export default function StartShow({
         <Button
           onPress={handleStart}
           style={{ alignItems: "center" }}
-          disabled={!scanned}
+          // disabled={!scanned}
         >
           Start Show
         </Button>

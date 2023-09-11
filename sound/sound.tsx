@@ -5,16 +5,18 @@ import {
   AVPlaybackStatusSuccess,
 } from "expo-av";
 import { useState, useEffect, useRef } from "react";
+import { invariant } from "../exception/invariant";
 
 export const DOWNLOAD_FIRST = false; // download and play simultaneously
 
 export async function loadSound(
-  file: AVPlaybackSource,
-  onStatusChange?: (status: AVPlaybackStatus) => void
+  source: Source,
+  onStatusChange?: (status: AVPlaybackStatus) => void,
+  startPosition: number = START_MS
 ) {
   return await Audio.Sound.createAsync(
-    file,
-    {},
+    typeof source === "string" ? { uri: source } : source,
+    { positionMillis: startPosition },
     onStatusChange,
     DOWNLOAD_FIRST
   );
@@ -26,11 +28,13 @@ export async function unloadSound(sound: Audio.Sound) {
 export type Options = {
   tick?: number;
   autoPlay?: boolean;
+  position?: number;
   onLoad?: () => void;
   onFinish?: () => void;
   onTick?: (position: number) => void;
 };
 export const DEFAULT_AUTOPLAY = false;
+export const DEFAULT_ENABLED = true;
 
 export const START_MS = 0;
 export const TENTH_SECOND_MS = 100;
@@ -47,15 +51,19 @@ function isStatusSuccess(
   return value.isLoaded;
 }
 
+export type Source = AVPlaybackSource | string;
+
 export default function useSound(
-  file: AVPlaybackSource,
+  file: Source,
   {
     autoPlay = DEFAULT_AUTOPLAY,
     tick = TENTH_SECOND_MS,
     onLoad,
     onFinish,
     onTick,
-  }: Options = {}
+    position = START_MS,
+  }: Options = {},
+  enabled: boolean = DEFAULT_ENABLED
 ) {
   const [sound, setSound] = useState<Audio.Sound | null>();
   const [error, setError] = useState<Error | null>(null);
@@ -83,17 +91,28 @@ export default function useSound(
   // load sound on mount (and path change)
   useEffect(() => {
     handleError(async () => {
+      if (!enabled) return;
+      if (!file) return;
+
       setPlaying(false);
       setLoaded(false);
       if (sound) await unloadSound(sound); // unload previous sound
 
+      invariant(position >= 0, "Position must be positive");
+
       const { sound: newSound, status } = await loadSound(
         file,
-        handleStatusChange
+        handleStatusChange,
+        position
       ); // load new sound
 
       if (!isStatusSuccess(status))
         throw new Error("Sound did not load successfully");
+
+      invariant(
+        position < (status?.durationMillis ?? START_MS),
+        "Position must be less than duration"
+      );
 
       setDuration(status?.durationMillis ?? START_MS);
       setSound(newSound);
@@ -101,7 +120,7 @@ export default function useSound(
       setLoaded(true);
       onLoad?.(); // user defined callback
     }, "Unknown error ocurred while loading sound")();
-  }, [file]);
+  }, [file, enabled]);
 
   // unload sound on unmount
   useEffect(() => {

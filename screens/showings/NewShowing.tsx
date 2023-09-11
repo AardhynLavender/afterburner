@@ -1,7 +1,6 @@
 import { ShowingScreenProps } from "../../navigation";
 import { View, StyleSheet, Text } from "react-native";
 import React, { useState } from "react";
-import { useShowsListQuery } from "../../api/shows";
 import SelectDropdown from "react-native-select-dropdown";
 import Button from "../../components/ui/Button";
 import DateTimePicker, {
@@ -9,6 +8,11 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { useShowingCreateMutation } from "../../api/showings";
 import { invariant } from "../../exception/invariant";
+import { useShowListQuery } from "../../api/shows";
+import SplashScreen from "../SplashScreen";
+import { Show, Showing } from "../../api/types";
+import { Timestamp } from "firebase/firestore";
+import { useShowingTicketsCreateMutation } from "../../api/ticket";
 
 export default function NewShowing({
   navigation,
@@ -16,27 +20,27 @@ export default function NewShowing({
 }: ShowingScreenProps<"newShowing">) {
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
-  const [showId, setShowId] = useState<number | null>(null);
+  const [showId, setShowId] = useState<string | null>(null);
 
-  const { mutate: createShow } = useShowingCreateMutation();
+  const { createShowing } = useShowingCreateMutation();
+  const { createTickets } = useShowingTicketsCreateMutation();
   const handleCreateShowing = async () => {
     invariant(showId, "show_id is required to create a showing");
-
-    const show = {
-      start_timestamp: start.toISOString(),
-      stop_timestamp: end.toISOString(),
-      show_id: showId,
-      location_id: null,
+    const showing: Showing = {
+      showId,
+      startTimestamp: Timestamp.fromDate(start),
+      endTimestamp: Timestamp.fromDate(end),
     };
 
-    createShow(show, {
-      onSuccess: () => {
-        setStart(new Date());
-        setEnd(new Date());
-        setShowId(null);
-        navigation.navigate("showingList");
-      },
-    });
+    const showingId = await createShowing(showing);
+    invariant(showingId, "showing `id` is required to create tickets");
+    await createTickets(showingId, 6); // todo: move to cloud function -> onDocumentCreate("/showing/{showingId}")
+
+    setStart(new Date());
+    setEnd(new Date());
+    setShowId(null);
+
+    navigation.navigate("showingList");
   };
 
   return (
@@ -55,12 +59,12 @@ function ShowDropdown({
   showId,
   onShowIdChange,
 }: {
-  showId: number | null;
-  onShowIdChange: (show: number) => void;
+  showId: string | null;
+  onShowIdChange: (show: string) => void;
 }) {
-  const { data: shows, isLoading } = useShowsListQuery();
+  const { shows, isLoading } = useShowListQuery();
 
-  if (isLoading) return null;
+  if (isLoading) return <Text>loading shows...</Text>;
   if (!shows?.length) return null;
 
   return (

@@ -1,60 +1,56 @@
 import React from "react";
-import { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { invariant } from "../../../exception/invariant";
 import { ShowScreenProps } from "../../../navigation";
-import useSound from "../../../sound/sound";
 import { usePersistent } from "../../../api/persistent";
-import { Chapter, chapters } from "../../../static";
-import { START_MS } from "../../../sound/sound";
+import useSound, { START_MS } from "../../../sound/sound";
+import { Chapter } from "../../../api/types";
+import StartShow from "./StartShow";
+import SplashScreen from "../../SplashScreen";
 import { ChapterProvider } from "./context";
 import Interaction from "./Interaction";
-import StartShow from "./StartShow";
 import Button from "../../../components/ui/Button";
-import SplashScreen from "../../SplashScreen";
-import { useShowingGetQuery } from "../../../api/showings";
-import { useShowGetTicketedQuery } from "../../../api/shows";
+import { useActiveShow } from "../../../api/activeShow";
 
 export default function Show({ route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
   invariant(showId, "`showId` is required");
 
-  const [running, setRunning] = useState(false);
-  const [currentTrack, setCurrentTrack, reading] = usePersistent<number>(
-    "afterburner-current-track",
-    0
-  );
+  const { activeShow, error, loading: loadingActiveShow } = useActiveShow();
+
+  const [, setCurrentPosition] = usePersistent("current-position", 0);
+  const [currentTrack, setCurrentTrack, readingCurrentTrack] =
+    usePersistent<number>("current-track", null);
+
+  if (readingCurrentTrack || loadingActiveShow) return <SplashScreen />;
+  if (error) return <Text>Error: {JSON.stringify(error)}</Text>;
+
+  // no active show found, render the start show screen
+  if (!activeShow || (activeShow && currentTrack === null)) {
+    const handleStart = () => setCurrentTrack(0);
+
+    return (
+      <StartShow
+        onStart={handleStart}
+        title={"The Anderson Localization"}
+        description={"Don't start yet! we'll let you know when to begin"}
+      />
+    );
+  }
+
+  if (!activeShow.chapters.length) return <Text>No chapters found...</Text>;
 
   const handleNext = () => {
     const nextTrack = (currentTrack ?? 0) + 1;
-    if (nextTrack >= chapters.length) setRunning(false);
+    if (nextTrack >= activeShow.chapters.length) setCurrentTrack(null);
     else setCurrentTrack(nextTrack);
+    setCurrentPosition(0);
   };
-
-  const handleStart = () => {
-    setRunning(true);
-    setCurrentTrack(0);
-  };
-
-  const [activeTicket] = usePersistent<string>("active-ticket", null);
-  const { data: show, error } = useShowGetTicketedQuery(1, activeTicket);
-  console.log(show);
-
-  if (reading) return <Text>Loading...</Text>;
-
-  if (running)
-    return (
-      <CurrentChapter
-        chapter={chapters[currentTrack ?? 0]}
-        onNext={handleNext}
-      />
-    );
 
   return (
-    <StartShow
-      onStart={handleStart}
-      title={"The Anderson Localization"}
-      description={"Don't start yet! we'll let you know when to begin"}
+    <CurrentChapter
+      chapter={activeShow.chapters[currentTrack ?? 0]}
+      onNext={handleNext}
     />
   );
 }
@@ -68,16 +64,21 @@ function CurrentChapter({
 }) {
   const isDev = process.env.EXPO_PUBLIC_IS_DEV === "true";
 
-  const [position, setPosition] = useState(0);
+  const [position, setPosition, readingPosition] = usePersistent<number>(
+    "current-position",
+    START_MS
+  );
 
   const handleNext = () => {
     setPosition(START_MS);
     onNext();
   };
+  invariant(chapter?.audioFileUrl, "chapter must have an audio file url");
 
   const { isLoaded, playing, error, play, pause, duration, seek } = useSound(
-    chapter.audio_file,
-    { autoPlay: true, onTick: setPosition }
+    chapter.audioFileUrl,
+    { autoPlay: true, onTick: setPosition, position: position ?? START_MS },
+    !readingPosition // wait for the position to be read from persistent storage
   );
 
   if (!isLoaded) return <SplashScreen />;
@@ -97,11 +98,11 @@ function CurrentChapter({
         <View
           style={[
             styles.progress,
-            { width: `${(position / duration) * 100}%` },
+            { width: `${((position ?? 0) / duration) * 100}%` },
           ]}
         />
         <View style={styles.durationContainer}>
-          <Text style={styles.duration}>{formatTime(position)}</Text>
+          <Text style={styles.duration}>{formatTime(position ?? 0)}</Text>
           {isDev && (
             <View style={{ flexDirection: "row", gap: 8 }}>
               <Button onPress={seekBackward}>-1s</Button>
@@ -117,7 +118,7 @@ function CurrentChapter({
       <ChapterProvider chapter={chapter} next={handleNext}>
         <Interaction
           interactions={chapter.interactions}
-          position={position}
+          position={position ?? 0}
           duration={duration}
         />
       </ChapterProvider>

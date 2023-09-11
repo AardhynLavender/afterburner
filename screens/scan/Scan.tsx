@@ -1,39 +1,35 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { RootScreenProps } from "../../navigation";
 import TicketScanner, { useTicketScanner } from "./TicketScanner";
-import {
-  PublicTicket,
-  TicketClaim,
-  useClaimTicket,
-  usePersistentTicket,
-} from "../../api/ticket";
-import { Public } from "../../api/audio";
+import { PublicTicket } from "../../api/types";
+import { useEffect } from "react";
+import { useTicketClaim } from "../../api/ticket";
+import { TicketClaim } from "../../api/functions";
 
 export default function Scan({}: RootScreenProps<"scan">) {
-  const { permission, ticket, error, handleScan } = useTicketScanner();
+  const {
+    permission,
+    ticket,
+    error: scanError,
+    handleScan,
+  } = useTicketScanner();
 
-  const [persistentTicket, setPersistentTicket] = usePersistentTicket();
-  const { data: status } = useClaimTicket(ticket, {
-    claim: persistentTicket?.key !== ticket?.key, // only claim if not already claimed
-  });
+  const { status, claim, error: claimError } = useTicketClaim();
+
   useEffect(() => {
-    if (status === "SUCCESS" && ticket) setPersistentTicket(ticket);
-  }, [status]);
-
-  const { data, error: e } = Public.useGetAudioQuery(
-    "theAndersonLocalization",
-    "Track-1.mp3",
-    "there-once-was-a-cat-that-liked-to-sit-on-the-mat-and-his-name-was-gregory-james-anderson"
-  );
-  console.log("error: ", e);
-  console.log("data: ", data);
+    if (ticket && !scanError) claim(ticket);
+  }, [ticket]);
 
   return (
     <View style={styles.container}>
       <TicketScanner permission={permission} onScan={handleScan} />
       <View style={{ ...styles.card, flex: 1 }}>
-        <Result ticket={ticket} error={error} status={status} />
+        <Result
+          ticket={ticket}
+          error={scanError || claimError}
+          status={status}
+        />
       </View>
     </View>
   );
@@ -48,12 +44,7 @@ function Result({
   error: Error | null;
   status?: TicketClaim | null;
 }) {
-  if (error)
-    return (
-      <>
-        <Text style={styles.error}>{error.message}</Text>
-      </>
-    );
+  if (error) return <Text style={styles.error}>{error.message}</Text>;
 
   if (ticket)
     return (

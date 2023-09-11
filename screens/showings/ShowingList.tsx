@@ -9,8 +9,8 @@ import SplashScreen from "../SplashScreen";
 export default function ShowingList({
   navigation,
 }: ShowingScreenProps<"showingList">) {
-  const handleShowNavigate = (showingId: number) =>
-    navigation.navigate("showing", { showingId });
+  const handleShowNavigate = (showingId: string, showId: string) =>
+    navigation.navigate("showing", { showingId, showId });
   const handleNavigateNewShow = () => navigation.navigate("newShowing");
 
   return (
@@ -22,47 +22,49 @@ export default function ShowingList({
 }
 
 function List({
-  onPressShow: handleShowNavigate,
+  onPressShow,
 }: {
-  onPressShow: (id: number) => void;
+  onPressShow: (showingId: string, showId: string) => void;
 }) {
-  const { data: showings, isLoading } = useShowingListQuery();
-
-  const handleShowingSelect = (showingId: number) => () =>
-    handleShowNavigate(showingId);
+  const { showings, isLoading } = useShowingListQuery();
 
   if (isLoading) return <SplashScreen />;
   if (!showings) return null;
 
   return (
     <ScrollView>
-      {showings?.map((showing) => {
-        const { date, time: startTime } = displayDate(showing.start_timestamp);
-        const { time: endTime } = displayDate(showing.stop_timestamp);
+      <View style={styles.list}>
+        {showings?.map((showing) => {
+          const start = showing.startTimestamp.toDate();
+          const end = showing.endTimestamp.toDate();
+          const { date, time: startTime } = displayDate(start);
+          const { time: endTime } = displayDate(end);
 
-        return (
-          <TouchableHighlight
-            onPress={handleShowingSelect(showing.id)}
-            style={{ borderRadius: 32 }}
-            key={showing.id}
-          >
-            <View style={styles.card}>
-              <Text style={styles.title}>{showing.show?.name}</Text>
-              <View style={styles.time}>
-                <Text>{date}</Text>
-                <Text>
-                  {startTime} to {endTime}
+          return (
+            <TouchableHighlight
+              onPress={() => onPressShow(showing.id, showing.showId)}
+              style={{ borderRadius: 32 }}
+              key={showing.id}
+            >
+              <View style={styles.card}>
+                <Text style={styles.title}>
+                  {showing?.showName ?? "Untitled Show"}
                 </Text>
+                <View style={styles.time}>
+                  <Text>{date}</Text>
+                  <Text>
+                    {startTime} to {endTime}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </TouchableHighlight>
-        );
-      })}
+            </TouchableHighlight>
+          );
+        })}
+      </View>
     </ScrollView>
   );
 }
-function displayDate(timestamp: string) {
-  const date = new Date(timestamp);
+function displayDate(date: Date) {
   return {
     date: date.toLocaleDateString("en-NZ", {
       weekday: "long",
@@ -83,6 +85,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 24,
+    gap: 16,
+  },
+  list: {
+    flex: 1,
     gap: 16,
   },
   card: {

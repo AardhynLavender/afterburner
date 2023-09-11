@@ -2,10 +2,7 @@ import { StackNavigationOptions } from "@react-navigation/stack";
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { signOut } from "../../api/authenticate";
-import {
-  dumpPersistentStore,
-  usePersistentDumpQuery,
-} from "../../api/persistent";
+import { usePersistentDumpQuery } from "../../api/persistent";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../../contexts/auth";
 import {
@@ -15,7 +12,8 @@ import {
   SettingsStackScreen,
 } from "../../navigation";
 import SignIn from "./SignIn";
-import { useEffect } from "react";
+import { useActiveShow } from "../../api/activeShow";
+import DevOnly from "../../components/util/DevOnly";
 
 const options: StackNavigationOptions = {
   headerShown: false,
@@ -45,6 +43,8 @@ function SettingsList({ navigation }: SettingsScreenProps<"settingList">) {
 
   const { user } = useAuth();
 
+  const { clearActiveShow } = useActiveShow();
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
@@ -59,19 +59,23 @@ function SettingsList({ navigation }: SettingsScreenProps<"settingList">) {
             <Button onPress={handleSignIn}>Sign in</Button>
           </View>
         )}
+        <DevOnly>
+          <View style={styles.setting}>
+            <Text>Clear active show and ticket</Text>
+            <Button onPress={clearActiveShow}>Remove</Button>
+          </View>
+        </DevOnly>
       </View>
-      {process.env.EXPO_PUBLIC_IS_DEV === "true" && (
-        <>
-          <Text>{JSON.stringify(user, null, 2)}</Text>
-          <Text>{JSON.stringify(process.env, null, 2)}</Text>
-          <PersistantDump />
-        </>
-      )}
+      <DevOnly>
+        <Text>{JSON.stringify(user, null, 2)}</Text>
+        <Text>{JSON.stringify(process.env, null, 2)}</Text>
+        <PersistentDump />
+      </DevOnly>
     </ScrollView>
   );
 }
 
-function PersistantDump() {
+function PersistentDump() {
   const { data: storeDump } = usePersistentDumpQuery();
   return <Text>{JSON.stringify(storeDump, null, 2)}</Text>;
 }

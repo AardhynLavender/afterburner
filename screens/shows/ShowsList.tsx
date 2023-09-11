@@ -4,15 +4,15 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { ShowScreenProps } from "../../navigation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { getShows, useShowsListQuery } from "../../api/shows";
 import { Show } from "../../api/types";
 import SplashScreen from "../SplashScreen";
+import { useShowListQuery } from "../../api/shows";
 
 export default function ShowList({ navigation }: ShowScreenProps<"showList">) {
-  const toShow = (showId: number) => () =>
+  const toShow = (showId: string) => () =>
     navigation.navigate("show", { showId });
 
-  const { data: shows, error, isLoading } = useShowsListQuery();
+  const { shows, error, isLoading } = useShowListQuery();
 
   if (isLoading && !shows) return <SplashScreen />;
   if (error) return <Text>Error loading shows</Text>;

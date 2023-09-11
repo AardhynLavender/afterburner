@@ -8,13 +8,15 @@ import {
   Platform,
   ScrollViewProps,
 } from "react-native";
-import { useShowingGetQuery } from "../../api/showings";
 import { ShowingScreenProps } from "../../navigation";
 import { invariant } from "../../exception/invariant";
 import SplashScreen from "../SplashScreen";
-import { Ticket } from "../../api/types";
+import { Ticket, Identity } from "../../api/types";
 import { encodeTicket, useTicketListQuery } from "../../api/ticket";
 import QRCode from "react-native-qrcode-svg";
+import { useShowingGetQuery } from "../../api/showings";
+import { useShowGetQuery } from "../../api/shows";
+import DevOnly from "../../components/util/DevOnly";
 
 // Horizontal scrolling
 // @see https://medium.com/nerd-for-tech/react-native-create-a-horizontal-snap-scrollview-e1d01ac3ba09
@@ -28,26 +30,28 @@ const END_CARD_INSET_PERCENT = (1 - CARD_WIDTH_PERCENT) / 2;
 const END_CARD_INSET = WINDOW_WIDTH * END_CARD_INSET_PERCENT - CARD_GAP / 2;
 
 export default function Showing({ route }: ShowingScreenProps<"showing">) {
-  const { showingId } = route.params;
+  const { showingId, showId } = route.params;
   invariant(showingId, "`showingId` is required");
+  invariant(showId, "`showId` is required");
 
-  const { data: showing, isLoading } = useShowingGetQuery(showingId);
-  const { data: tickets } = useTicketListQuery(showingId);
-
-  if (isLoading) return <SplashScreen />;
-
-  invariant(showing?.show, "show is required");
+  const { show, isLoading: loadingShow } = useShowGetQuery(showId);
+  const { tickets, isLoading: loadingTickets } = useTicketListQuery(showingId);
+  if (loadingTickets || loadingShow) return <SplashScreen />;
 
   return (
     <View style={styles.container}>
-      <CardScrollView>
-        {tickets?.map((ticket) => (
-          <TicketCard ticket={ticket} key={ticket.id} />
-        ))}
-      </CardScrollView>
+      {!tickets?.length ? (
+        <NoTickets />
+      ) : (
+        <CardScrollView>
+          {tickets?.map((ticket) => (
+            <TicketCard ticket={ticket} key={ticket.id} />
+          ))}
+        </CardScrollView>
+      )}
       <View style={styles.metadata}>
-        <Text style={styles.heading}>{showing?.show.name}</Text>
-        <Text>{showing?.show.description}</Text>
+        <Text style={styles.heading}>{show?.name}</Text>
+        <Text>{show?.description}</Text>
       </View>
     </View>
   );
@@ -78,7 +82,7 @@ function CardScrollView({ children, ...scrollViewProps }: ScrollViewProps) {
   );
 }
 
-function TicketCard({ ticket }: { ticket: Ticket }) {
+function TicketCard({ ticket }: { ticket: Ticket & Identity }) {
   const code = encodeTicket(ticket);
 
   return (
@@ -88,8 +92,18 @@ function TicketCard({ ticket }: { ticket: Ticket }) {
         backgroundColor="transparent"
         size={CARD_WIDTH - CARD_PADDING * 2}
       />
-      <Text style={{ flex: 1 }}>Ticket #{ticket.id}</Text>
+      <DevOnly>
+        <Text style={{ flex: 1 }}>Ticket #{ticket.id}</Text>
+      </DevOnly>
       <Text>{ticket.claimed ? "Taken" : "Available"}</Text>
+    </View>
+  );
+}
+
+function NoTickets() {
+  return (
+    <View style={styles.noTicketsHero}>
+      <Text>No tickets available</Text>
     </View>
   );
 }
@@ -102,6 +116,11 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   metadata: { gap: 16, paddingHorizontal: 24 },
+  noTicketsHero: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   ticket: {
     padding: CARD_PADDING,
     backgroundColor: "#efefef",
