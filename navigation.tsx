@@ -26,7 +26,7 @@ export type RootScreenProps<T extends keyof RootNavigation> =
 
 export type ShowNavigation = {
   showList: undefined;
-  show: { showId: number | null };
+  show: { showId: string | null };
 };
 export const { Navigator: ShowStackNavigator, Screen: ShowStackScreen } =
   createStackNavigator<ShowNavigation>();
@@ -38,7 +38,7 @@ export type ShowScreenProps<T extends keyof ShowNavigation> = StackScreenProps<
 // showings //
 
 export type ShowingNavigation = {
-  showing: { showingId: number | null };
+  showing: { showingId: string | null; showId: string | null };
   newShowing: undefined;
   showingList: undefined;
 };

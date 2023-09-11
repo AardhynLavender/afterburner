@@ -1,12 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { invariant } from "../exception/invariant";
-import { useState, useEffect, useCallback, useRef } from "react";
-import { getNativeSourceAndFullInitialStatusForLoadAsync } from "expo-av/build/AV";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "./client";
+import UnhandledError from "../exception/unhandled";
 
-function invalidateStoreQuery() {
-  queryClient.invalidateQueries(["asyncStorage"]);
+const PERSISTENT_STORE_KEY = "persistent-store";
+const NULL_STR = "null";
+
+export function invalidateStoreQuery() {
+  queryClient.invalidateQueries([PERSISTENT_STORE_KEY]);
 }
 export async function dumpPersistentStore() {
   try {
@@ -20,7 +22,7 @@ export async function dumpPersistentStore() {
   }
 }
 export function usePersistentDumpQuery() {
-  return useQuery(["persistentDump"], dumpPersistentStore);
+  return useQuery([PERSISTENT_STORE_KEY], dumpPersistentStore);
 }
 
 export type Primitive = string | number | object | boolean | null;
@@ -38,14 +40,39 @@ class WriteException extends Error {
     this.name = "WriteException";
   }
 }
+class ReadException extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = "WriteException";
+  }
+}
+class SerializeException extends Error {
+  public constructor(message: string) {
+    super(message);
+    this.name = "WriteException";
+  }
+}
 
+const stringSerializable = ["string", "number", "boolean"] as const;
+type StringSerializable = (typeof stringSerializable)[number];
 function serialize<T extends Primitive>(value: T) {
-  if (typeof value === "string") return value;
-  return typeof value === "object" ? JSON.stringify(value) : value.toString();
+  try {
+    if (value === null || value === NULL_STR || value === undefined)
+      return NULL_STR;
+    const type = typeof value;
+    if (stringSerializable.includes(type as StringSerializable))
+      return String(value);
+    if (typeof value === "object") return JSON.stringify(value);
+    throw `failed to serialize value of type: ${type}`;
+  } catch (error) {
+    throw new SerializeException(
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
+  }
 }
 
 function deserialize(value: string | null) {
-  if (value === null) return null;
+  if (value === NULL_STR || value === null || value === undefined) return null;
   if (value === "true") return true;
   if (value === "false") return false;
   if (!isNaN(parseInt(value))) return parseInt(value);
@@ -75,7 +102,7 @@ export async function read<T extends Primitive>(key: string) {
     return writable as T;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (error instanceof Error) throw new WriteException(message);
+    if (error instanceof Error) throw new ReadException(message);
     throw error;
   }
 }
@@ -107,7 +134,7 @@ export function usePersistent<T extends Primitive>(
   initialValue: T | null = null
 ) {
   const [reading, setReading] = useState(true);
-  const [value, setValue] = useState<T | null>(null);
+  const [value, setValue] = useState<T | null>();
 
   // read from disk on mount
   useEffect(() => {

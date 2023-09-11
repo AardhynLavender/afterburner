@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
-import React from "react";
 import { useAuth } from "./contexts/auth";
 import { RootTabNavigator, RootTabScreen } from "./navigation";
 import { Shows, Scan, Showings, Settings } from "./screens";
