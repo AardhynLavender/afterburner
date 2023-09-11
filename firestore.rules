@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authenticated() { return request.auth != null; }
+
+    match /show/{showId} {
+      allow read:
+        if true;
+      allow create, update, delete:
+        if authenticated();
+
+      match /chapter/{chapterId} {
+        allow read, create, update, delete:
+          if authenticated();
+      }
+    }
+
+    match /showing/{showingId} {
+      allow create, read, update, delete:
+        if authenticated();
+    }
+
+    match /ticket/{ticketId} {
+      allow create, read, update, delete:
+        if authenticated();
+    }
+  }
+}

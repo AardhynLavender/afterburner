@@ -1,4 +1,4 @@
-import { User } from "@supabase/supabase-js";
+import { User } from "firebase/auth";
 import React, {
   createContext,
   ReactElement,
@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { supabase } from "../supabase";
+import { auth } from "../api/firebase";
 
 type Context = { user: User | null };
 const AuthContext = createContext<Context>({ user: null });
@@ -19,12 +19,11 @@ export default function AuthProvider({
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") setUser(null);
-      else setUser(session?.user ?? null);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) setUser(user);
+      else setUser(null);
     });
-
-    return () => data.subscription.unsubscribe();
+    return unsubscribe;
   }, []);
 
   return (
@@ -33,5 +32,7 @@ export default function AuthProvider({
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
 }

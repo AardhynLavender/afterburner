@@ -1,6 +1,6 @@
 import React from "react";
 import { createContext, useContext } from "react";
-import { Chapter } from "../../../static";
+import { Chapter } from "../../../api/types";
 
 type NextFn = () => void;
 

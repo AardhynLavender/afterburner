@@ -2,23 +2,23 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import Button from "../../components/ui/Button";
-import { authenticate, AuthenticationError } from "../../api/authenticate";
 import { SettingsScreenProps } from "../../navigation";
 import UnhandledError from "../../exception/unhandled";
+import { authenticate } from "../../api/authenticate";
 
 export default function SignIn({ navigation }: SettingsScreenProps<"signIn">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<AuthenticationError>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   const handleSubmit = async () => {
     try {
       setError(null);
-      await authenticate(email, password);
+      const credentials = await authenticate(email, password);
       navigation.navigate("settingList");
     } catch (error) {
       if (error instanceof Error) setError(error);
-      throw new UnhandledError("Failed to sign in"); // this should never be thrown
+      else throw new UnhandledError("Failed to sign in"); // this should never be thrown
     }
   };
 

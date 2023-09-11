@@ -3,11 +3,13 @@
     "appspot",
     "datetimepicker",
     "firebaseapp",
+    "firestore",
     "Millis",
     "qrcode",
     "supabase",
     "tanstack",
-    "typecheck"
+    "typecheck",
+    "uuidv"
   ],
   "deno.enablePaths": ["./supabase/functions"],
   "deno.importMap": "./supabase/functions/import_map.json"

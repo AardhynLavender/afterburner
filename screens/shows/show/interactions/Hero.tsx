@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import type { HeroInteraction } from "../../../../static";
+import type { HeroInteraction } from "../../../../api/types";
 
 export function HeroInteraction({
   interaction,
