@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import UnhandledError from "../exception/unhandled";
 import { getShowData } from "./functions";
-import { usePersistent } from "./persistent";
-import { useActiveTicket } from "./ticket";
+import { usePersistent, write } from "./persistent";
+import { ACTIVE_TICKET_KEY, useActiveTicket } from "./ticket";
 import { ActiveShow } from "./types";
 
 const ACTIVE_SHOW_KEY = "active-show";
@@ -50,9 +50,9 @@ export function useActiveShow() {
     })();
   }, [activeTicket, readingActiveTicket, activeShow, readingActiveShow]);
 
-  const clearActiveShow = () => {
-    setActiveShow(null);
-    setActiveTicket(null);
+  const clearActiveShow = async () => {
+    await write(ACTIVE_SHOW_KEY, null);
+    await write(ACTIVE_TICKET_KEY, null);
   };
 
   return { error, activeShow, clearActiveShow, loading };
