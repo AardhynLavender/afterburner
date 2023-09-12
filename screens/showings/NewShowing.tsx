@@ -28,6 +28,7 @@ export default function NewShowing({
     invariant(showId, "show_id is required to create a showing");
     const showing: Showing = {
       showId,
+      showName: "The Anderson Localization",
       startTimestamp: Timestamp.fromDate(start),
       endTimestamp: Timestamp.fromDate(end),
     };

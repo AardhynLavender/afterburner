@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, ScrollView, StyleSheet, Text } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import { useShowingListQuery } from "../../api/showings";
@@ -28,13 +28,21 @@ function List({
 }) {
   const { showings, isLoading } = useShowingListQuery();
 
+  const sortedShowings = useMemo(
+    () =>
+      showings?.sort((a, b) =>
+        a.startTimestamp.toMillis() < b.startTimestamp.toMillis() ? 1 : -1
+      ),
+    [showings]
+  );
+
   if (isLoading) return <SplashScreen />;
   if (!showings) return null;
 
   return (
     <ScrollView>
       <View style={styles.list}>
-        {showings?.map((showing) => {
+        {sortedShowings?.map((showing) => {
           const start = showing.startTimestamp.toDate();
           const end = showing.endTimestamp.toDate();
           const { date, time: startTime } = displayDate(start);
@@ -48,10 +56,10 @@ function List({
             >
               <View style={styles.card}>
                 <Text style={styles.title}>
-                  {showing?.showName ?? "Untitled Show"}
+                  {showing?.showName ?? "The Anderson Localization"}
                 </Text>
                 <View style={styles.time}>
-                  <Text>{date}</Text>
+                  <Text>{date} </Text>
                   <Text>
                     {startTime} to {endTime}
                   </Text>
