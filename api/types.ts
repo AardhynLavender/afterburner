@@ -71,6 +71,7 @@ export type Interaction = NextChapterInteraction | HeroInteraction;
 
 export type Chapter = {
   title: string;
+  id: number;
   description: string;
   fileName: string;
   audioFileUrl?: string;

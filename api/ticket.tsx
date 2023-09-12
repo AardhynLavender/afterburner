@@ -45,7 +45,7 @@ export function encodeTicket(ticket: PublicTicket) {
 
 // Claiming //
 
-const ACTIVE_TICKET_KEY = "active-ticket";
+export const ACTIVE_TICKET_KEY = "active-ticket";
 export function useActiveTicket(ticket: PublicTicket | null = null) {
   return usePersistent<PublicTicket | null>(ACTIVE_TICKET_KEY, ticket);
 }

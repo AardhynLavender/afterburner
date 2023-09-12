@@ -157,7 +157,7 @@ export const getShowData = onRequest(async (request, response) => {
     log(`preparing chapters for \`${show.slug}\``);
     const chapters = await Promise.all(
       chaptersSnapshot.docs.map(async (doc) => {
-        const chapter = doc.data();
+        const chapter = doc.data() as { id: number; [key: string]: any };
 
         // create a signed url for the audio file so the user can download|stream it
         const audioFilePath = `${show.slug}/${chapter.fileName}.mp3`;
@@ -167,6 +167,8 @@ export const getShowData = onRequest(async (request, response) => {
       })
     );
 
+    const sortedChapters = chapters.sort((a, b) => a.id - b.id);
+
     return corsHandler(request, response, () => {
       response.status(SUCCESS).send(
         JSON.stringify({
@@ -175,7 +177,7 @@ export const getShowData = onRequest(async (request, response) => {
             error: null,
             showing,
             show,
-            chapters,
+            chapters: sortedChapters,
             ticket,
           },
         })
