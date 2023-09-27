@@ -3,10 +3,6 @@ import { View, StyleSheet, Text } from "react-native";
 import React, { ReactElement, useState } from "react";
 import SelectDropdown from "react-native-select-dropdown";
 import Button from "../../components/ui/Button";
-import DateTimePicker, {
-  DateTimePickerAndroid,
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
 import { useShowingCreateMutation } from "../../api/showings";
 import { invariant } from "../../exception/invariant";
 import { useShowListQuery } from "../../api/shows";
@@ -14,6 +10,7 @@ import { Showing } from "../../api/types";
 import { Timestamp } from "firebase/firestore";
 import { useShowingTicketsCreateMutation } from "../../api/ticket";
 import { OS } from "../../util/os";
+import ShowingTimePicker from "./ShowingTimePicker";
 
 export default function NewShowing({
   navigation,
@@ -80,75 +77,11 @@ function ShowDropdown({
   );
 }
 
-function ShowingTimePicker({
-  date,
-  onDateChange,
-  label,
-}: {
-  date: Date;
-  onDateChange: (date: Date) => void;
-  label: string;
-}) {
-  const handleChange = (e: DateTimePickerEvent, selectedDate?: Date) => {
-    setDatePickerOpen(false);
-    setTimePickerOpen(false);
-    const currentDate = selectedDate || date;
-    onDateChange(currentDate);
-  };
-
-  const props = { value: date || new Date(), onChange: handleChange };
-
-  // for android
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [timePickerOpen, setTimePickerOpen] = useState(false);
-
-  if (datePickerOpen) DateTimePickerAndroid.open({ ...props, mode: "date" });
-  if (timePickerOpen) DateTimePickerAndroid.open({ ...props, mode: "time" });
-
-  return (
-    <View style={styles.time}>
-      <Text style={styles.label}>{label}</Text>
-      <OS ios web windows macos>
-        <DateTimePicker mode="date" {...props} />
-        <DateTimePicker mode="time" {...props} />
-      </OS>
-      <OS android>
-        <AndroidDateTimeButton onPress={() => setDatePickerOpen(true)}>
-          {date.toLocaleDateString()}
-        </AndroidDateTimeButton>
-        <AndroidDateTimeButton onPress={() => setTimePickerOpen(true)}>
-          {date.toLocaleTimeString()}
-        </AndroidDateTimeButton>
-      </OS>
-    </View>
-  );
-}
-
-function AndroidDateTimeButton({
-  onPress,
-  children,
-}: {
-  onPress: () => void;
-  children: string;
-}) {
-  return (
-    <Button onPress={onPress} style={{ backgroundColor: "#aaa" }}>
-      {children}
-    </Button>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     gap: 16,
     width: "100%",
     padding: 24,
     alignItems: "stretch",
-  },
-  label: { flex: 1 },
-  time: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
   },
 });

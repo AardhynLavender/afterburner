@@ -6,6 +6,8 @@ import Button from "../../components/ui/Button";
 import { ShowingScreenProps } from "../../navigation";
 import SplashScreen from "../SplashScreen";
 
+const UNTITLED_SHOW_NAME = "Untitled Show";
+
 export default function ShowingList({
   navigation,
 }: ShowingScreenProps<"showingList">) {
@@ -56,10 +58,10 @@ function List({
             >
               <View style={styles.card}>
                 <Text style={styles.title}>
-                  {showing?.showName ?? "The Anderson Localization"}
+                  {showing?.showName ?? UNTITLED_SHOW_NAME}
                 </Text>
                 <View style={styles.time}>
-                  <Text>{date} </Text>
+                  <Text>{date}</Text>
                   <Text>
                     {startTime} to {endTime}
                   </Text>
@@ -110,7 +112,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   time: {
-    flexDirection: "row",
     justifyContent: "space-between",
   },
 });

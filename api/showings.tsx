@@ -1,4 +1,11 @@
-import { collection, addDoc, query, onSnapshot, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import { firestore } from "./firebase";
 import { Identity, Showing } from "./types";
 import UnhandledError from "../exception/unhandled";
@@ -25,7 +32,7 @@ export function useShowingCreateMutation() {
   };
 }
 
-export function useShowingGetQuery(showId: string) {
+export function useShowingGetQuery(showingId: string) {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showing, setShowing] = useState<Showing & Identity>();
@@ -37,12 +44,12 @@ export function useShowingGetQuery(showId: string) {
 
   useEffect(() => {
     setIsLoading(true);
-    const q = doc(firestore, "showing", showId);
+    const q = doc(firestore, "showing", showingId);
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
         setIsLoading(false);
-        setShowing(snapshot.data() as Showing & Identity);
+        setShowing({ id: showingId, ...snapshot.data() } as Showing & Identity);
       },
       handleError
     );
@@ -89,5 +96,31 @@ export function useShowingListQuery() {
     error,
     isLoading,
     showings,
+  };
+}
+
+export function useShowingDeleteMutation() {
+  const [error, setError] = useState<Error | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const deleteShowing = async (showingId: string) => {
+    try {
+      setIsDeleting(true);
+      const ref = doc(firestore, "showing", showingId);
+      await deleteDoc(ref);
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error : new UnhandledError("Unknown error")
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return {
+    error,
+    isDeleting,
+    deleteShowing,
   };
 }
