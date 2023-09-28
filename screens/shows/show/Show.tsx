@@ -12,9 +12,11 @@ import Interaction from "./Interaction";
 import Button from "../../../components/ui/Button";
 import { useActiveShow } from "../../../api/activeShow";
 
-export default function Show({ route }: ShowScreenProps<"show">) {
+export default function Show({ navigation, route }: ShowScreenProps<"show">) {
   const { showId } = route.params;
   invariant(showId, "`showId` is required");
+
+  const navigateTicketScanner = () => navigation.getParent()?.navigate("scan");
 
   const { activeShow, error, loading: loadingActiveShow } = useActiveShow();
 
@@ -32,6 +34,7 @@ export default function Show({ route }: ShowScreenProps<"show">) {
     return (
       <StartShow
         onStart={handleStart}
+        onNavigate={navigateTicketScanner}
         title={"The Anderson Localization"}
         description={"Don't start yet! we'll let you know when to begin"}
       />

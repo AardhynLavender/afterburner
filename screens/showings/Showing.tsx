@@ -20,8 +20,8 @@ import { useShowGetQuery } from "../../api/shows";
 import DevOnly from "../../components/util/DevOnly";
 import { IsAndroid } from "../../util/os";
 import Button from "../../components/ui/Button";
+import Fi from "react-native-vector-icons/Feather";
 import type { Ticket, Showing, Identity } from "../../api/types";
-import ShowingTimePicker from "./ShowingTimePicker";
 
 // Horizontal scrolling
 // @see https://medium.com/nerd-for-tech/react-native-create-a-horizontal-snap-scrollview-e1d01ac3ba09
@@ -37,6 +37,8 @@ const CARD_GAP = 16;
 const CARD_PADDING = 48;
 const END_CARD_INSET_PERCENT = (1 - CARD_WIDTH_PERCENT) / 2;
 const END_CARD_INSET = WINDOW_WIDTH * END_CARD_INSET_PERCENT - CARD_GAP / 2;
+
+const CODE_SIZE = CARD_WIDTH - CARD_PADDING * 2;
 
 export default function Showing({
   navigation,
@@ -135,11 +137,7 @@ function TicketCard({ ticket }: { ticket: Ticket & Identity }) {
       }}
       key={ticket.id}
     >
-      <QRCode
-        value={code}
-        backgroundColor="transparent"
-        size={CARD_WIDTH - CARD_PADDING * 2}
-      />
+      <QRCode value={code} backgroundColor="transparent" size={CODE_SIZE} />
       <DevOnly>
         <Text style={{ flex: 1 }}>{ticket.id}</Text>
       </DevOnly>
