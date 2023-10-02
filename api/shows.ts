@@ -1,4 +1,11 @@
-import { collection, addDoc, query, onSnapshot, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { firestore } from "./firebase";
 import { Identity, Show } from "./types";
 import UnhandledError from "../exception/unhandled";
@@ -44,7 +51,7 @@ export function useShowGetQuery(showId: string) {
       q,
       (snapshot) => {
         setIsLoading(false);
-        setShow(snapshot.data() as Show & Identity);
+        setShow({ ...snapshot.data(), id: showId } as Show & Identity);
       },
       handleError
     );
@@ -57,6 +64,27 @@ export function useShowGetQuery(showId: string) {
     isLoading,
     show,
   };
+}
+
+export function useShowMutation() {
+  const [error, setError] = useState<Error | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
+
+  const mutateShow = async (id: string, show: Partial<Show>) => {
+    setIsMutating(true);
+    try {
+      await updateDoc(doc(firestore, "show", id), show);
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error : new UnhandledError("Unknown error")
+      );
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  return { error, mutateShow, isMutating };
 }
 
 export function useShowListQuery() {

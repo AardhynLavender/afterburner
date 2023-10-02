@@ -24,6 +24,37 @@ export type ActiveShow = {
   chapters: Chapter[];
 };
 
+// Interaction //
+
+export type InteractionType = "hero" | "image" | "video" | "next";
+export type InteractionPrimitive = {
+  type: InteractionType;
+  start_timestamp?: number; // undefined indicates the start
+  end_timestamp?: number; // undefined indicates the end
+};
+
+export type NextChapterInteraction = InteractionPrimitive & {
+  type: "next";
+  text?: string;
+};
+export type HeroInteraction = InteractionPrimitive & {
+  type: "hero";
+  text: string;
+};
+
+export type Interaction = NextChapterInteraction | HeroInteraction;
+
+// Chapter //
+
+export type Chapter = {
+  title: string;
+  id: number;
+  description: string;
+  fileName: string;
+  audioFileUrl?: string;
+  interactions?: Interaction[];
+};
+
 // Showing //
 
 export type ShowingMeta = {};
@@ -48,32 +79,3 @@ export type Ticket = {
 };
 
 export type PublicTicket = Pick<Ticket & Identity, "showingId" | "id" | "meta">;
-
-// Chapters & Interactions //
-
-export type InteractionType = "hero" | "image" | "video" | "next";
-export type InteractionPrimitive = {
-  type: InteractionType;
-  start_timestamp?: number; // undefined indicates the start
-  end_timestamp?: number; // undefined indicates the end
-};
-
-export type NextChapterInteraction = InteractionPrimitive & {
-  type: "next";
-  text?: string;
-};
-export type HeroInteraction = InteractionPrimitive & {
-  type: "hero";
-  text: string;
-};
-
-export type Interaction = NextChapterInteraction | HeroInteraction;
-
-export type Chapter = {
-  title: string;
-  id: number;
-  description: string;
-  fileName: string;
-  audioFileUrl?: string;
-  interactions?: Interaction[];
-};

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import Button from "../../../../components/ui/Button";
 import type { NextChapterInteraction } from "../../../../api/types";
-import { useChapterContext } from "../context";
+import { useChapterContext } from "../display/context";
 
 const DEFAULT_NEXT_TEXT = "Next Chapter";
 

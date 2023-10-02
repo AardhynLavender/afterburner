@@ -2,31 +2,31 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Button from "../../../components/ui/Button";
 import { useActiveShow } from "../../../api/activeShow";
-import DevOnly from "../../../components/util/DevOnly";
-import { useAuth } from "../../../contexts/auth";
+import { Authenticated, useAuth } from "../../../contexts/auth";
 
 export default function StartShow({
   onStart: handleStart,
-  onNavigate: handleNavigate,
+  onScan: handleNavigate,
+  onEdit: handleEdit,
   title = "Start Show",
   description = "When your ready, press the start button",
 }: {
   onStart: () => void;
-  onNavigate: () => void;
+  onScan: () => void;
+  onEdit: () => void;
   title: string;
   description: string;
 }) {
   const { activeShow } = useActiveShow();
-  const { user } = useAuth();
 
   return (
     <View style={styles.container}>
       <View style={{ ...styles.card, flex: 1 }}>
-        {user && (
-          <View style={{ alignItems: "flex-end" }}>
-            <Button>Edit</Button>
+        <Authenticated>
+          <View style={{ alignItems: "flex-start" }}>
+            <Button onPress={handleEdit}>Edit</Button>
           </View>
-        )}
+        </Authenticated>
         <View style={{ flex: 1, gap: 16, justifyContent: "center" }}>
           <Text style={styles.heading}>{title}</Text>
           <Text style={styles.description}>{description}</Text>

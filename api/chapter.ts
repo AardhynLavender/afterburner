@@ -69,3 +69,36 @@ export function useChapterListQuery(showId: string) {
     loading,
   };
 }
+
+export function useChapterMutation() {
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const mutateChapter = async (
+    showId: string,
+    chapterId: string,
+    chapter: Partial<Chapter>
+  ) => {
+    try {
+      setLoading(true);
+      await setDoc(
+        doc(firestore, "show", showId, "chapter", chapterId),
+        chapter,
+        { merge: true }
+      );
+    } catch (error) {
+      console.error(error);
+      setError(
+        error instanceof Error ? error : new UnhandledError("Unknown error")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    error,
+    mutateChapter,
+    loading,
+  };
+}

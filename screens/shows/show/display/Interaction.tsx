@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
-import type { Interaction } from "../../../api/types";
-import { HeroInteraction, NextChapterInteraction } from "./interactions";
+import type { Interaction } from "../../../../api/types";
+import { HeroInteraction, NextChapterInteraction } from "../interactions";
 
 export default function Interaction({
   interactions,

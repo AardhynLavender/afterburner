@@ -2,13 +2,13 @@ import { useFonts } from "expo-font";
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { ShowScreenProps } from "../../navigation";
+import { ShowsScreenProps } from "../../navigation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Show } from "../../api/types";
 import SplashScreen from "../SplashScreen";
 import { useShowListQuery } from "../../api/shows";
 
-export default function ShowList({ navigation }: ShowScreenProps<"showList">) {
+export default function ShowList({ navigation }: ShowsScreenProps<"showList">) {
   const toShow = (showId: string) => () =>
     navigation.navigate("show", { showId });
 

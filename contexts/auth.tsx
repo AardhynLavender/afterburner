@@ -36,3 +36,15 @@ export function useAuth() {
   if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 }
+
+export function Authenticated({
+  children,
+  fallback = null,
+}: {
+  children: ReactElement | ReactElement[];
+  fallback?: ReactElement | null;
+}) {
+  const { user } = useAuth();
+  if (user) return <>{children}</>;
+  return fallback;
+}

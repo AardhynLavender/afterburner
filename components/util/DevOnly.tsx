@@ -1,6 +1,9 @@
 import React, { ReactElement } from "react";
 
 const TRUE = "true";
+export function isDev() {
+  return process.env.EXPO_PUBLIC_IS_DEV === TRUE;
+}
 
 export default function DevOnly({
   children,
@@ -9,7 +12,6 @@ export default function DevOnly({
   children: ReactElement | ReactElement[];
   fallback?: ReactElement | null;
 }) {
-  const isDev = process.env.EXPO_PUBLIC_IS_DEV === TRUE;
-  if (isDev) return <>{children}</>;
+  if (isDev()) return <>{children}</>;
   return fallback;
 }

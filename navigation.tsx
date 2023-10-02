@@ -1,3 +1,4 @@
+import { Identity, Show } from "./api/types";
 import {
   BottomTabScreenProps,
   createBottomTabNavigator,
@@ -6,8 +7,16 @@ import {
   createStackNavigator,
   StackScreenProps,
 } from "@react-navigation/stack";
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabScreenProps,
+} from "@react-navigation/material-top-tabs";
 
-// Root Bottom tabs //
+// see: https://reactnavigation.org/docs/typescript
+
+type ShowProps = { showId: string | null };
+
+// Root //
 
 export type RootNavigation = {
   home: undefined;
@@ -24,9 +33,20 @@ export type RootScreenProps<T extends keyof RootNavigation> =
 
 // Shows //
 
-export type ShowNavigation = {
+export type ShowsNavigation = {
   showList: undefined;
-  show: { showId: string | null };
+  show: ShowProps;
+};
+export const { Navigator: ShowsStackNavigator, Screen: ShowsStackScreen } =
+  createStackNavigator<ShowsNavigation>();
+export type ShowsScreenProps<T extends keyof ShowsNavigation> =
+  StackScreenProps<ShowsNavigation, T>;
+
+// Show //
+
+export type ShowNavigation = {
+  showDisplay: ShowProps;
+  showEditor: ShowProps;
 };
 export const { Navigator: ShowStackNavigator, Screen: ShowStackScreen } =
   createStackNavigator<ShowNavigation>();
@@ -35,10 +55,21 @@ export type ShowScreenProps<T extends keyof ShowNavigation> = StackScreenProps<
   T
 >;
 
-// showings //
+// Editor //
+
+export type EditorNavigation = {
+  chapters: { show: Show & Identity };
+  details: { show: Show & Identity };
+};
+export const { Navigator: EditorTabNavigator, Screen: EditorTabScreen } =
+  createMaterialTopTabNavigator<EditorNavigation>();
+export type EditorScreenProps<T extends keyof EditorNavigation> =
+  MaterialTopTabScreenProps<EditorNavigation, T>;
+
+// Showings //
 
 export type ShowingNavigation = {
-  showing: { showingId: string | null; showId: string | null };
+  showing: { showingId: string | null } & ShowProps;
   newShowing: undefined;
   showingList: undefined;
 };
