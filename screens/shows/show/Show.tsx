@@ -29,7 +29,7 @@ export default function Show({ route }: ShowsScreenProps<"show">) {
       <ShowStackScreen
         name="showEditor"
         component={ShowEditor}
-        options={{ animationEnabled: false }}
+        options={{ animationEnabled: false, title: "Edit Show" }}
         initialParams={{ showId }}
       />
     </ShowStackNavigator>
