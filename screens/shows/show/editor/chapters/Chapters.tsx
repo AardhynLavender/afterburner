@@ -36,7 +36,7 @@ export default function Chapters({ route }: EditorScreenProps<"chapters">) {
       <ChapterEditorStackScreen
         name="create"
         component={CreateChapter}
-        initialParams={{ show }}
+        initialParams={{ showId: show.id, chapterId: undefined }}
         options={{ ...options, title: "New Chapter" }}
       />
     </ChapterEditorStackNavigator>
