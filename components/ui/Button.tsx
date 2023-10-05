@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import {
   GestureResponderEvent,
   StyleSheet,
@@ -10,21 +10,26 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 
 export type PressHandler = ((e: GestureResponderEvent) => void) & (() => void);
 
+export type ButtonVariant = "filled" | "stealth" | "outline";
+
 export type ButtonProps = {
-  children?: string;
+  children?: string | ReactElement;
   onPress?: PressHandler;
+  variant?: ButtonVariant;
   style?: ViewStyle;
   disabled?: boolean;
 };
 
 export default function Button({
   children = "button",
+  variant = "filled",
   onPress = () => {},
   style = {},
   disabled = false,
 }: ButtonProps) {
   const buttonStyles = {
     ...styles.button, // default styles
+    ...buttonVariant[variant], // variant styles
     ...(disabled ? styles.disabled : {}), // disabled styles
     ...style, // user defined styles
   };
@@ -32,35 +37,52 @@ export default function Button({
     <TouchableHighlight
       onPress={onPress}
       activeOpacity={0.9}
-      style={styles.touchable}
+      style={{
+        ...styles.touchable,
+        ...buttonVariant[variant], // variant styles
+      }}
       disabled={disabled}
     >
       <View style={buttonStyles}>
-        <Text style={styles.text}>{children}</Text>
+        {typeof children === "string" ? (
+          <Text style={{ ...styles.text, color: buttonVariant[variant].color }}>
+            {children}
+          </Text>
+        ) : (
+          children
+        )}
       </View>
     </TouchableHighlight>
   );
 }
 
 const styles = StyleSheet.create({
-  touchable: {
-    borderRadius: 8,
-    backgroundColor: "#2196F3",
-  },
+  touchable: { borderRadius: 8 },
   button: {
-    backgroundColor: "#2196F3",
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignItems: "center",
+    color: "inherit",
     width: "100%",
   },
   disabled: {
     backgroundColor: "#b8c3cc",
   },
   text: {
-    color: "#fff",
+    color: "inherit",
     fontSize: 16,
     fontWeight: "bold",
   },
+});
+
+const buttonVariant = StyleSheet.create({
+  filled: { backgroundColor: "#2196F3", color: "#fff" },
+  outline: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#2196F3",
+    color: "#2196F3",
+  },
+  stealth: { backgroundColor: "transparent", color: "#000" },
 });
