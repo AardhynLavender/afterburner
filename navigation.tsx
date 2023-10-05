@@ -1,4 +1,4 @@
-import { Identity, Show } from "./api/types";
+import { Chapter, Identity, Show } from "./api/types";
 import {
   BottomTabScreenProps,
   createBottomTabNavigator,
@@ -65,6 +65,18 @@ export const { Navigator: EditorTabNavigator, Screen: EditorTabScreen } =
   createMaterialTopTabNavigator<EditorNavigation>();
 export type EditorScreenProps<T extends keyof EditorNavigation> =
   MaterialTopTabScreenProps<EditorNavigation, T>;
+
+export type ChapterEditorNavigation = {
+  list: { show: Show & Identity };
+  create: { showId: string; chapterId: number };
+  chapter: { show: Show & Identity; chapter: Chapter };
+};
+export const {
+  Navigator: ChapterEditorStackNavigator,
+  Screen: ChapterEditorStackScreen,
+} = createStackNavigator<ChapterEditorNavigation>();
+export type ChapterEditorScreenProps<T extends keyof ChapterEditorNavigation> =
+  StackScreenProps<ChapterEditorNavigation, T>;
 
 // Showings //
 

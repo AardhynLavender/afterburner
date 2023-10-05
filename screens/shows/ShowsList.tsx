@@ -7,6 +7,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Show } from "../../api/types";
 import SplashScreen from "../SplashScreen";
 import { useShowListQuery } from "../../api/shows";
+import { Authenticated } from "../../contexts/auth";
+import Button from "../../components/ui/Button";
 
 export default function ShowList({ navigation }: ShowsScreenProps<"showList">) {
   const toShow = (showId: string) => () =>

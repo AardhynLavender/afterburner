@@ -8,7 +8,8 @@ import {
 import { invariant } from "../../../../exception/invariant";
 import SplashScreen from "../../../SplashScreen";
 import Details from "./Details";
-import Chapters from "./Chapters";
+import ChapterList from "./chapters/ChapterList";
+import Chapters from "./chapters/Chapters";
 
 export default function ShowEditor({
   navigation,

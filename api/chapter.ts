@@ -1,21 +1,21 @@
 import { collection, doc, query, onSnapshot, setDoc } from "firebase/firestore";
 import { firestore } from "./firebase";
-import { Chapter, Identity, ActiveShow } from "./types";
+import { Chapter, Identity } from "./types";
 import UnhandledError from "../exception/unhandled";
 import { useEffect, useState } from "react";
-import { usePersistent } from "./persistent";
-import { useActiveTicket } from "./ticket";
-import { getShowData } from "./functions";
 
 export function useChapterCreateMutation() {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const addChapter = async (showId: string, chapter: Chapter & Identity) => {
+  const addChapter = async (
+    showId: string,
+    chapter: Omit<Chapter, "audioFileUrl">
+  ) => {
     try {
       setLoading(true);
       await setDoc(
-        doc(firestore, "show", showId, "chapter", chapter.id),
+        doc(firestore, "show", showId, "chapter", chapter.id.toString()),
         chapter
       );
     } catch (error) {
@@ -76,13 +76,13 @@ export function useChapterMutation() {
 
   const mutateChapter = async (
     showId: string,
-    chapterId: string,
+    chapterId: number,
     chapter: Partial<Chapter>
   ) => {
     try {
       setLoading(true);
       await setDoc(
-        doc(firestore, "show", showId, "chapter", chapterId),
+        doc(firestore, "show", showId, "chapter", chapterId.toString()),
         chapter,
         { merge: true }
       );
