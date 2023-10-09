@@ -70,6 +70,40 @@ export function useChapterListQuery(showId: string) {
   };
 }
 
+export function useChapterGetQuery(showId: string, chapterId: number) {
+  const [error, setError] = useState<Error | null>(null);
+  const [chapter, setChapter] = useState<Chapter | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleError = (error: Error) => {
+    console.error(error);
+    setError(error);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    const q = doc(firestore, "show", showId, "chapter", chapterId.toString());
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.data() as Chapter;
+        setChapter(data);
+        setLoading(false);
+      },
+      handleError
+    );
+
+    return unsubscribe;
+  }, []);
+
+  return {
+    error,
+    chapter,
+    loading,
+  };
+}
+
 export function useChapterMutation() {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);

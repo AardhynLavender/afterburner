@@ -22,7 +22,7 @@ export default function CreateChapter({
     addChapter(showId, {
       title,
       description,
-      fileName: "text-file",
+      fileName: null,
       id: chapterId,
     });
 

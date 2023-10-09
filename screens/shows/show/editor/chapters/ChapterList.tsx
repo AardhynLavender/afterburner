@@ -30,8 +30,8 @@ export default function ChapterList({
       showId: show.id,
       chapterId: chapters.length,
     });
-  const toChapter = (chapter: Chapter) => () =>
-    navigation.navigate("chapter", { show, chapter });
+  const toChapter = (chapterId: number) => () =>
+    navigation.navigate("chapter", { show, chapterId });
 
   return (
     <ScrollView>
@@ -41,7 +41,7 @@ export default function ChapterList({
           <ChapterCard
             key={chapter.id}
             chapter={chapter}
-            onPress={toChapter(chapter)}
+            onPress={toChapter(chapter.id)}
           />
         ))}
       </View>
@@ -60,7 +60,9 @@ function ChapterCard({
       <View>
         <View style={styles.chapterHeader}>
           <Text style={styles.chapterTitle}>{chapter.title}</Text>
-          <Text style={styles.audioFile}>{chapter.fileName}</Text>
+          {chapter.fileName && (
+            <Text style={styles.file}>{chapter.fileName}</Text>
+          )}
         </View>
         <Text>{chapter.description}</Text>
       </View>
@@ -91,10 +93,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  audioFile: {
+  file: {
     fontSize: 12,
-    backgroundColor: "#000",
-    color: "#fff",
+    borderWidth: 1,
+    borderColor: "#444",
+    color: "#444",
     alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 4,

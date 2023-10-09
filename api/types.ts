@@ -50,7 +50,7 @@ export type Chapter = {
   title: string;
   id: number;
   description: string;
-  fileName: string;
+  fileName: string | null;
   audioFileUrl?: string;
   interactions?: Interaction[];
 };

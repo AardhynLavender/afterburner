@@ -1,12 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
   getFunctions,
   httpsCallable,
   HttpsCallableOptions,
 } from "firebase/functions";
+import { readBlob } from "./filesystem";
+import { invariant } from "../exception/invariant";
+
+// Initialization //
 
 const firebaseConfig = {
   apiKey: "AIzaSyCA2bbQ6wDdDSSrmnb2LF7MN8td1lJR95g",
@@ -20,6 +24,8 @@ const firebaseConfig = {
 
 const firebase = initializeApp(firebaseConfig);
 
+// Functions //
+
 type CloudFunction = "claimTicket" | "getShowData";
 type CloudFunctionParams = Record<string, any> | unknown;
 type CloudFunctionResponse = Record<string, any> | unknown;
@@ -31,10 +37,26 @@ export function fn<
   return httpsCallable<T, R>(functions, functionName, options);
 }
 
+// Storage ///
+
 const storage = getStorage(firebase);
 export async function getFileUrl(path: string) {
   const url = await getDownloadURL(ref(storage, path));
   return url;
+}
+export async function uploadFile(src: string, dest: string) {
+  console.log("Uploading file", src, dest);
+  try {
+    const blob = await readBlob(src);
+    invariant(blob, "Failed to convert uri to blob");
+
+    const fileRef = ref(storage, dest);
+    const res = await uploadBytes(fileRef, blob);
+    return res.metadata;
+  } catch (error) {
+    console.log(error);
+    throw error || new Error("Failed to upload file");
+  }
 }
 
 export const firestore = getFirestore(firebase);

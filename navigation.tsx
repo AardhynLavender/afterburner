@@ -69,7 +69,7 @@ export type EditorScreenProps<T extends keyof EditorNavigation> =
 export type ChapterEditorNavigation = {
   list: { show: Show & Identity };
   create: { showId: string; chapterId: number };
-  chapter: { show: Show & Identity; chapter: Chapter };
+  chapter: { show: Show & Identity; chapterId: number };
 };
 export const {
   Navigator: ChapterEditorStackNavigator,
