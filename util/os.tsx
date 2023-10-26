@@ -23,21 +23,14 @@ export function OS({
   return <>{fallback}</>;
 }
 
-export function IsAndroid() {
-  return Platform.OS === "android";
+function IsOS(os: PlatformType) {
+  return () => Platform.OS === os;
 }
-export function IsIOS() {
-  return Platform.OS === "ios";
-}
-export function IsWeb() {
-  return Platform.OS === "web";
-}
-export function IsWindows() {
-  return Platform.OS === "windows";
-}
-export function IsMacOS() {
-  return Platform.OS === "macos";
-}
+export const IsAndroid = IsOS("android");
+export const IsIOS = IsOS("ios");
+export const IsWeb = IsOS("web");
+export const IsWindows = IsOS("windows");
+export const IsMacOS = IsOS("macos");
 
 export function IsNative() {
   return Platform.OS !== "web";
