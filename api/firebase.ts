@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuth, initializeAuth } from "firebase/auth";
+import { getReactNativePersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import {
@@ -24,12 +26,18 @@ const firebaseConfig = {
 
 const firebase = initializeApp(firebaseConfig);
 
+// Firestore //
+
+export const firestore = getFirestore(firebase);
+
 // Functions //
 
-type CloudFunction = "claimTicket" | "getShowData";
+const functions = getFunctions(firebase);
+
 type CloudFunctionParams = Record<string, any> | unknown;
 type CloudFunctionResponse = Record<string, any> | unknown;
-const functions = getFunctions(firebase);
+type CloudFunction = "claimTicket" | "getShowData";
+
 export function fn<
   T extends CloudFunctionParams = unknown,
   R extends CloudFunctionResponse = unknown
@@ -37,7 +45,7 @@ export function fn<
   return httpsCallable<T, R>(functions, functionName, options);
 }
 
-// Storage ///
+// Storage //
 
 const storage = getStorage(firebase);
 export async function getFileUrl(path: string) {
@@ -45,7 +53,6 @@ export async function getFileUrl(path: string) {
   return url;
 }
 export async function uploadFile(src: string, dest: string) {
-  console.log("Uploading file", src, dest);
   try {
     const blob = await readBlob(src);
     invariant(blob, "Failed to convert uri to blob");
@@ -54,10 +61,13 @@ export async function uploadFile(src: string, dest: string) {
     const res = await uploadBytes(fileRef, blob);
     return res.metadata;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error || new Error("Failed to upload file");
   }
 }
 
-export const firestore = getFirestore(firebase);
-export const auth = getAuth(firebase);
+// auth //
+
+export const auth = initializeAuth(firebase, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
