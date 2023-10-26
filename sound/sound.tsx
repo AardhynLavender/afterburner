@@ -6,6 +6,7 @@ import {
 } from "expo-av";
 import { useState, useEffect, useRef } from "react";
 import { invariant } from "../exception/invariant";
+import { TENTH_SECOND_MS } from "../util/time";
 
 export const DOWNLOAD_FIRST = false; // download and play simultaneously
 
@@ -37,13 +38,6 @@ export const DEFAULT_AUTOPLAY = false;
 export const DEFAULT_ENABLED = true;
 
 export const START_MS = 0;
-export const TENTH_SECOND_MS = 100;
-export const QUARTER_SECOND_MS = 250;
-export const HALF_SECOND_MS = 500;
-export const THREE_QUARTER_SECOND_MS = 750;
-export const SECOND_MS = 1000;
-export const MINUTE_MS = 60 * SECOND_MS;
-export const HOUR_MS = 60 * MINUTE_MS;
 
 function isStatusSuccess(
   value: AVPlaybackStatus
@@ -54,7 +48,7 @@ function isStatusSuccess(
 export type Source = AVPlaybackSource | string;
 
 export default function useSound(
-  file: Source,
+  source: Source,
   {
     autoPlay = DEFAULT_AUTOPLAY,
     tick = TENTH_SECOND_MS,
@@ -92,7 +86,7 @@ export default function useSound(
   useEffect(() => {
     handleError(async () => {
       if (!enabled) return;
-      if (!file) return;
+      if (!source) return;
 
       setPlaying(false);
       setLoaded(false);
@@ -101,14 +95,12 @@ export default function useSound(
       invariant(position >= 0, "Position must be positive");
 
       const { sound: newSound, status } = await loadSound(
-        file,
+        source,
         handleStatusChange,
         position
       ); // load new sound
 
-      if (!isStatusSuccess(status))
-        throw new Error("Sound did not load successfully");
-
+      invariant(isStatusSuccess(status), "Sound did not load successfully");
       invariant(
         position < (status?.durationMillis ?? START_MS),
         "Position must be less than duration"
@@ -120,7 +112,7 @@ export default function useSound(
       setLoaded(true);
       onLoad?.(); // user defined callback
     }, "Unknown error ocurred while loading sound")();
-  }, [file, enabled]);
+  }, [source, enabled]);
 
   // unload sound on unmount
   useEffect(() => {
@@ -181,9 +173,15 @@ export default function useSound(
 
   const seek = handleError(async (by: number) => {
     const status = await getStatus();
-    if (!status) throw new Error("Sound is not loaded");
+    invariant(status, "Sound is not loaded");
     await setStatus({ ...status, positionMillis: status.positionMillis + by });
   }, "Unknown error ocurred while seeking sound");
+
+  const set = handleError(async (to: number) => {
+    const status = await getStatus();
+    invariant(status, "Sound is not loaded");
+    await setStatus({ ...status, positionMillis: to });
+  }, "Unknown error occurred while setting position");
 
   return {
     /**
@@ -216,6 +214,10 @@ export default function useSound(
      * Seek the sound by a given number of milliseconds
      */
     seek,
+    /**
+     * Set the position of the sound
+     */
+    set,
     /**
      * Get the duration of the sound
      */

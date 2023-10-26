@@ -5,6 +5,7 @@ import {
   View,
   ViewStyle,
   Text,
+  Alert,
 } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
@@ -17,10 +18,12 @@ export type ButtonProps = {
   onPress?: PressHandler;
   variant?: ButtonVariant;
   style?: ViewStyle;
+  confirm?: string;
   disabled?: boolean;
 };
 
 export default function Button({
+  confirm,
   children = "button",
   variant = "filled",
   onPress = () => {},
@@ -33,9 +36,19 @@ export default function Button({
     ...(disabled ? styles.disabled : {}), // disabled styles
     ...style, // user defined styles
   };
+
+  const handlePress = () => {
+    if (confirm)
+      Alert.alert("Are you sure?", confirm, [
+        { text: "Cancel", style: "cancel" }, // do nothing
+        { text: "OK", onPress },
+      ]);
+    else onPress();
+  };
+
   return (
     <TouchableHighlight
-      onPress={onPress}
+      onPress={handlePress}
       activeOpacity={0.9}
       style={{
         ...styles.touchable,
@@ -45,7 +58,12 @@ export default function Button({
     >
       <View style={buttonStyles}>
         {typeof children === "string" ? (
-          <Text style={{ ...styles.text, color: buttonVariant[variant].color }}>
+          <Text
+            style={{
+              ...styles.text,
+              color: buttonVariant[variant].color, // color does not inherit, reapply here
+            }}
+          >
             {children}
           </Text>
         ) : (
@@ -67,7 +85,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   disabled: {
-    backgroundColor: "#b8c3cc",
+    opacity: 0.3,
   },
   text: {
     color: "inherit",

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useChapterCreateMutation } from "../../../../../api/chapter";
 import Button from "../../../../../components/ui/Button";
-import TextField from "../../../../../components/ui/TextField";
+import { TextField } from "../../../../../components/ui/TextField";
 import { invariant } from "../../../../../exception/invariant";
 import { ChapterEditorScreenProps } from "../../../../../navigation";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, View, StyleSheet, Text } from "react-native";
 import { useShowMutation } from "../../../../api/shows";
-import TextField from "../../../../components/ui/TextField";
+import { TextField } from "../../../../components/ui/TextField";
 import { EditorScreenProps } from "../../../../navigation";
 
 export default function Details({ route }: EditorScreenProps<"details">) {

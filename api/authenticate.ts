@@ -6,7 +6,7 @@ export async function signOut() {
   try {
     await auth.signOut();
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }
@@ -21,7 +21,7 @@ export async function authenticate(email: string, password: string) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     return credential;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }

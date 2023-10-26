@@ -26,9 +26,11 @@ export type ActiveShow = {
 
 // Interaction //
 
-export type InteractionType = "hero" | "image" | "video" | "next";
+export const InteractionTypes = ["hero", "image", "next"] as const;
+export type InteractionType = (typeof InteractionTypes)[number];
 export type InteractionPrimitive = {
   type: InteractionType;
+  name?: string;
   start_timestamp?: number; // undefined indicates the start
   end_timestamp?: number; // undefined indicates the end
 };
@@ -36,13 +38,24 @@ export type InteractionPrimitive = {
 export type NextChapterInteraction = InteractionPrimitive & {
   type: "next";
   text?: string;
+  //todo: alignment, size, color, style, etc.
 };
 export type HeroInteraction = InteractionPrimitive & {
   type: "hero";
   text: string;
+  // todo: font, size, color, wrapping, animation, etc.
+};
+export type ImageInteraction = InteractionPrimitive & {
+  type: "image";
+  caption?: string;
+  imageUrl: string;
+  // todo: alignment, size, filter, aspect ratio, etc.
 };
 
-export type Interaction = NextChapterInteraction | HeroInteraction;
+export type Interaction =
+  | NextChapterInteraction
+  | HeroInteraction
+  | ImageInteraction;
 
 // Chapter //
 
