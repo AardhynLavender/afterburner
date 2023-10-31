@@ -62,11 +62,9 @@ export default function CurrentChapter({
           <Text style={styles.duration}>{formatTime(position ?? 0)}</Text>
           <DevOnly>
             <View style={{ flexDirection: "row", gap: 8 }}>
-              <Button onPress={seekBackward}>-1s</Button>
               <Text>
-                {position}|{duration}
+                {position} / {duration}
               </Text>
-              <Button onPress={seekForward}>+1s</Button>
             </View>
           </DevOnly>
           <Text style={styles.duration}>{formatTime(duration)}</Text>
@@ -79,6 +77,18 @@ export default function CurrentChapter({
           duration={duration}
         />
       </ChapterProvider>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <Button onPress={seekBackward}>Back 10s</Button>
+        <DevOnly>
+          <Button onPress={seekForward}>Forward 10s</Button>
+        </DevOnly>
+      </View>
       <View style={styles.buttons}>
         <View style={{ width: isDev() ? "80%" : "100%" }}>
           <Button onPress={handlePlayToggle}>
