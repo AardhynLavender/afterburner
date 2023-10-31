@@ -12,6 +12,8 @@ import { useShowingTicketsCreateMutation } from "../../api/ticket";
 import { OS } from "../../util/os";
 import ShowingTimePicker from "./ShowingTimePicker";
 
+const SPECIAL_SHOW = "The Anderson Localization";
+
 export default function NewShowing({
   navigation,
   route,
@@ -26,14 +28,14 @@ export default function NewShowing({
     invariant(showId, "show_id is required to create a showing");
     const showing: Showing = {
       showId,
-      showName: "The Anderson Localization",
+      showName: SPECIAL_SHOW, // todo: pull show name from show
       startTimestamp: Timestamp.fromDate(start),
       endTimestamp: Timestamp.fromDate(end),
     };
 
     const showingId = await createShowing(showing);
     invariant(showingId, "showing `id` is required to create tickets");
-    await createTickets(showingId, 6); // todo: move to cloud function -> onDocumentCreate("/showing/{showingId}")
+    await createTickets(showingId, 6, SPECIAL_SHOW === SPECIAL_SHOW); // todo: pull show name from show
 
     setStart(new Date());
     setEnd(new Date());

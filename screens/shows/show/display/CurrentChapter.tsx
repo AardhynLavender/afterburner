@@ -26,6 +26,8 @@ export default function CurrentChapter({
     START_MS
   );
 
+  console.log(chapter);
+
   const handleNext = () => {
     setPosition(START_MS);
     onNext();

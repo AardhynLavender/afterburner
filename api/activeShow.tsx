@@ -35,10 +35,30 @@ export function useActiveShow() {
         setLoading(true);
         console.log("fetching active show...");
 
-        const { data } = await getShowData({
+        let { data } = await getShowData({
           ticketId: activeTicket.id,
           showingId: activeTicket.showingId,
         });
+
+        // reorder the chapters based on the ticket's chapter ordering if it exists
+        const ticketOrdering = data.ticket.meta?.chapterOrdering;
+        if (ticketOrdering)
+          data.chapters.sort((a, b) => {
+            const aIndex = ticketOrdering.indexOf(a.id);
+            const bIndex = ticketOrdering.indexOf(b.id);
+            if (aIndex === -1) {
+              console.error(`chapter "${a.id}" not found in ticket ordering!`);
+              return 1;
+            }
+            if (bIndex === -1) {
+              console.error(`chapter "${b.id}" not found in ticket ordering!`);
+              return -1;
+            }
+            return aIndex - bIndex;
+          });
+
+        console.log(data);
+
         setActiveShow(data);
       } catch (error) {
         console.error(error);

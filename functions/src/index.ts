@@ -160,7 +160,7 @@ export const getShowData = onRequest(async (request, response) => {
         const chapter = doc.data() as { id: number; [key: string]: any };
 
         // create a signed url for the audio file so the user can download|stream it
-        const audioFilePath = `${show.slug}/${chapter.fileName}.mp3`;
+        const audioFilePath = `${show.slug}/${chapter.fileName}`;
         const audioFileUrl = await generateSignedUrl(audioFilePath);
 
         return { ...chapter, audioFileUrl };

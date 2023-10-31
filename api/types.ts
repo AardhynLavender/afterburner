@@ -82,11 +82,13 @@ export type Showing = {
 
 // Ticket //
 
-export type TicketMeta = {};
+export type TicketMeta = {
+  chapterOrdering?: number[] | null;
+};
 
 export type Ticket = {
   showingId: string;
-  meta?: TicketMeta;
+  meta: TicketMeta;
   expires: Timestamp | null;
   claimed: boolean;
 };

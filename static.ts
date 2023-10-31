@@ -1,7 +1,5 @@
-import { Chapter } from "./api/types";
-// todo: store these in a bucket somewhere
-
-export const chapterOrderings = [
+// todo: these should be stored in the show...
+export const andersonLocationChapterOrdering = [
   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
   [0, 3, 7, 8, 4, 5, 6, 1, 2, 9, 10, 11],
   [0, 7, 4, 1, 2, 3, 5, 6, 8, 9, 10, 11],

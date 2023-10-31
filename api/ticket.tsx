@@ -14,6 +14,7 @@ import UnhandledError from "../exception/unhandled";
 import { uuidv4 } from "@firebase/util";
 import repeat from "../util/repeat";
 import { claimTicket, TicketClaim, ticketClaimStatuses } from "./functions";
+import { andersonLocationChapterOrdering } from "../static";
 
 // example ticket: gaPtge6KB18RQpfZg6XG-691d14d1-ce6a-496e-a6dd-07e55e7365b3-{\"order_number\":\"2\"}}
 const TICKET_REGEX = /^([a-zA-Z0-9]{20})-([a-zA-Z0-9]{20})-(\{.*\})$/;
@@ -101,14 +102,24 @@ export function useShowingTicketsCreateMutation() {
   const [error, setError] = useState<Error | null>(null);
   const { createTicket } = useTicketCreateMutation();
 
-  const createTickets = async (showingId: string, amount: number) =>
-    repeat(amount, async () => {
+  const createTickets = async (
+    showingId: string,
+    amount: number,
+    randomOrdering: boolean
+  ) =>
+    repeat(amount, async (i) => {
       try {
-        const ticket = {
+        const ticket: Ticket = {
           showingId,
           expires: DEFAULT_EXPIRY,
           claimed: DEFAULT_CLAIMED,
+          meta: {
+            ...(randomOrdering && {
+              chapterOrdering: andersonLocationChapterOrdering[i],
+            }),
+          },
         };
+
         await createTicket(ticket);
       } catch (error) {
         console.error(error);
