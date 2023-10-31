@@ -229,7 +229,7 @@ function ChapterInteractions({
         const url = await getFileUrl(uri);
         setUrl(url);
       } catch (error) {
-        console.log(error || "Unknown error");
+        console.error(error || "Unknown error");
       }
     })();
   }, [uri]);

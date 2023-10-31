@@ -57,8 +57,6 @@ export function useActiveShow() {
             return aIndex - bIndex;
           });
 
-        console.log(data);
-
         setActiveShow(data);
       } catch (error) {
         console.error(error);
