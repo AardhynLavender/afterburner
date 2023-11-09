@@ -15,42 +15,14 @@ cp template.env .env
 vim .env
 ```
 
-### MacOS
-
-[Download](https://docs.expo.dev/workflow/ios-simulator/open) the `Simulator` app.
-
-Then run
+Follow the Expo [installation instructions](https://docs.expo.dev/get-started/installation/), then use
 
 ```bash
 npm start
 ```
 
-and press `i` to open the app in the simulator.
+## Environment
 
-### Windows
+As the application uses public firebase credientials for authentication, no environment variables need to be set for the project to run.
 
-[Download](https://docs.expo.dev/workflow/android-studio-emulator/) the `Android Studio` app.
-
-Then run
-
-```bash
-npm start
-```
-
-and press `a` to open the app in the simulator.
-
-### Physical Device
-
-You'll need the [`Expo Go`](https://docs.expo.dev/get-started/expo-go/) app installed on your device. IOS and Android.
-
-Then run
-
-```bash
-npm start
-```
-
-And use the camera on your device to scan the QR code in the terminal. It will build and deploy the app to your device on save within the Expo Go app.
-
-## License
-
-> To be determined
+You may wish to change `EXPO_PUBLIC_IS_DEV` to `true` while testing locally.
