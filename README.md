@@ -26,3 +26,21 @@ npm start
 As the application uses public firebase credientials for authentication, no environment variables need to be set for the project to run.
 
 You may wish to change `EXPO_PUBLIC_IS_DEV` to `true` while testing locally.
+
+## References
+
+> **Github Copilot**
+> 
+> Aided while writing the software
+
+> **ChatGPT**
+> 
+> For bouncing ideas, and issues off. Never writing small or large amounts of code for me
+
+> **Expo Documentation**
+> 
+> For all things expo
+
+> **React Native Documentation**
+>
+> For all things React Native
