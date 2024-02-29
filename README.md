@@ -39,7 +39,7 @@ You may wish to change `EXPO_PUBLIC_IS_DEV` to `true` while testing locally, thi
 
 > **ChatGPT**
 > 
-> For bouncing ideas, and issues off. Never writing small or large amounts of code for me
+> For bouncing ideas, and issues off. Never writing large amounts of code for me
 
 > **Expo Documentation**
 > 
